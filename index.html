@@ -20,33 +20,21 @@
     .screen-item { padding: 4px; border-radius: 4px; }
     .screen-item.selected { background: #007aff; color: #fff; }
     .clickwheel { width: 180px; height: 180px; background: radial-gradient(circle at center, #ddd 0%, #999 90%);
-      border-radius: 50%; margin-top: auto; position: relative; box-shadow: inset 0 0 25px rgba(0,0,0,0.4); }
+      border-radius: 50%; margin-top: auto; position: relative; box-shadow: inset 0 0 25px rgba(0,0,0,0.4); touch-action: none; }
     .clickwheel::before { content: ''; position: absolute; inset: 0; border-radius: 50%;
       background: radial-gradient(circle at center, rgba(255,255,255,0.2) 0%, transparent 70%); }
     .clickwheel .btn { position: absolute; font-size: 10px; font-weight: bold; color: #333; }
     .btn.menu { top: 12px; left: 50%; transform: translateX(-50%); }
-    .btn.back { left: 10px; top: 50%; transform: translateY(-50%); }
-    .btn.forward { right: 10px; top: 50%; transform: translateY(-50%); }
     .btn.play { bottom: 12px; left: 50%; transform: translateX(-50%); }
     .center-button { width: 60px; height: 60px; border-radius: 50%; background: #555; position: absolute;
       top: 50%; left: 50%; transform: translate(-50%, -50%); cursor: pointer; box-shadow: inset 0 0 8px rgba(0,0,0,0.3); }
     .volume-btn { position: absolute; width: 20px; height: 40px; background: #666; border-radius: 10px; opacity: 0.7;
       cursor: pointer; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
-    .volume-up { left: -25px; top: 150px; }
-    .volume-down { left: -25px; top: 200px; }
-    .now-playing-bar { position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%);
-      text-align: center; font-size: 10px; }
-    .equalizer { display: inline-block; width: 30px; height: 10px; margin-top: 2px; }
-    .equalizer div { display: inline-block; width: 3px; background: #007aff; margin: 0 1px;
-      animation: bounce 1s infinite ease-in-out alternate; }
-    .equalizer div:nth-child(2) { animation-delay: 0.2s; }
-    .equalizer div:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes bounce { from { height: 4px; } to { height: 10px; } }
+    .volume-up { left: -15px; top: 160px; }   /* sobresale a la izquierda */
+    .volume-down { left: -15px; top: 210px; }
     .list-container { height: 160px; overflow-y: auto; }
     .progress-bar { height: 3px; background: #333; width: 100%; margin-top: 4px; }
     .progress { height: 100%; background: #007aff; }
-    video.retro-video { width: 100%; border-radius: 8px; filter: grayscale(80%) contrast(120%) brightness(90%) sepia(0.3) saturate(0.8); }
-    img.photo-thumb { width: 100%; border-radius: 8px; margin: 4px 0; }
   </style>
 </head>
 <body>
@@ -67,7 +55,6 @@
       const [selected, setSelected] = useState(0);
       const [songs, setSongs] = useState([]);
       const [videos, setVideos] = useState([]);
-      const [photos, setPhotos] = useState([]);
       const [queue, setQueue] = useState([]);
       const [current, setCurrent] = useState(null);
       const [playing, setPlaying] = useState(false);
@@ -77,9 +64,10 @@
 
       const audioRef = useRef(null);
       const videoRef = useRef(null);
+      const wheelRef = useRef(null);
       const fileInputRef = useRef(null);
       const listRef = useRef(null);
-      const wheelRef = useRef(null);
+
       const userKey = `${username}_${pin}`;
 
       useEffect(() => {
@@ -103,22 +91,19 @@
         if (loggedIn) {
           const s = localStorage.getItem(`${userKey}_songs`);
           const v = localStorage.getItem(`${userKey}_videos`);
-          const p = localStorage.getItem(`${userKey}_photos`);
           setSongs(s ? JSON.parse(s) : []);
           setVideos(v ? JSON.parse(v) : []);
-          setPhotos(p ? JSON.parse(p) : []);
           document.body.classList.add('scaled');
         }
       }, [loggedIn]);
 
       useEffect(() => {
-        const ref = current?.url?.endsWith('.mp4') ? videoRef.current : audioRef.current;
+        const ref = audioRef.current;
         if (ref) {
           ref.volume = volume;
           ref.ontimeupdate = () => {
             setProgress(ref.duration ? ref.currentTime / ref.duration : 0);
           };
-          ref.onended = nextInQueue;
         }
       }, [current, volume]);
 
@@ -126,7 +111,6 @@
       const saveData = () => {
         localStorage.setItem(`${userKey}_songs`, JSON.stringify(songs));
         localStorage.setItem(`${userKey}_videos`, JSON.stringify(videos));
-        localStorage.setItem(`${userKey}_photos`, JSON.stringify(photos));
       };
 
       const handleLogin = () => {
@@ -134,109 +118,87 @@
         setLoggedIn(true); setScreen('menu'); setSelected(0);
       };
 
-      const nextInQueue = () => {
-        const idx = queue.findIndex(i => i.url === current?.url);
-        if (idx >= 0 && idx + 1 < queue.length) {
-          setCurrent(queue[idx + 1]); setPlaying(true);
-        } else { setCurrent(null); setPlaying(false); }
-      };
-
-      const togglePlay = () => {
-        if (!current) return;
-        const ref = current.url.endsWith('.mp4') ? videoRef.current : audioRef.current;
-        playing ? ref.pause() : ref.play();
-        setPlaying(!playing);
-      };
-
-      const volUp = () => { setVolume(v => Math.min(1, v + 0.1)); };
-      const volDown = () => { setVolume(v => Math.max(0, v - 0.1)); };
-
-      const handleFileInput = (type) => {
-        const files = Array.from(fileInputRef.current.files || []);
-        if (type === 'songs') {
-          const newsongs = files.filter(f => f.type.startsWith('audio')).map(f => ({ title: f.name, url: URL.createObjectURL(f) }));
-          setSongs([...songs, ...newsongs]); saveData();
-        } else if (type === 'videos') {
-          const newvids = files.filter(f => f.type.startsWith('video')).map(f => ({ title: f.name, url: URL.createObjectURL(f) }));
-          setVideos([...videos, ...newvids]); saveData();
-        }
-      };
-
-      const menuItems = ['Ver Cola', 'Añadir Música', 'Añadir Video', 'Biblioteca Música', 'Biblioteca Videos', 'Cámara Retro', 'Galería Fotos', 'Configuración'];
-      const configItems = ['Apagar Pantalla', 'Cerrar Sesión', 'Borrar Todo'];
-
-      const selectItem = () => {
-        const currentMenu = screen === 'menu' ? menuItems : configItems;
-        const item = currentMenu[selected];
-        vibrate();
-        if (screen === 'menu') {
-          if (item === 'Añadir Música') { fileInputRef.current.accept = 'audio/*'; fileInputRef.current.click(); }
-          else if (item === 'Añadir Video') { fileInputRef.current.accept = 'video/*'; fileInputRef.current.click(); }
-          else if (item === 'Ver Cola') { setScreen('queue'); }
-          else if (item === 'Biblioteca Música') { setScreen('songs'); }
-          else if (item === 'Biblioteca Videos') { setScreen('videos'); }
-          else if (item === 'Cámara Retro') { setScreen('camera'); }
-          else if (item === 'Galería Fotos') { setScreen('photos'); }
-          else if (item === 'Configuración') { setScreen('config'); }
-        } else if (screen === 'config') {
-          if (item === 'Apagar Pantalla') { setScreenOff(true); }
-          if (item === 'Cerrar Sesión') { setLoggedIn(false); document.body.classList.remove('scaled'); }
-          if (item === 'Borrar Todo') {
-            setSongs([]); setVideos([]); setPhotos([]); setQueue([]); saveData();
-          }
-        }
-      };
+      const volUp = () => setVolume(v => Math.min(1, v + 0.1));
+      const volDown = () => setVolume(v => Math.max(0, v - 0.1));
 
       const handleWheel = (delta) => {
         vibrate();
-        const currentMenu = screen === 'menu' ? menuItems : configItems;
-        setSelected(s => { let n = s + delta; if (n < 0) n = currentMenu.length - 1; if (n >= currentMenu.length) n = 0; return n; });
-        listRef.current.scrollTop = selected * 20;
+        const max = 7; // total items in menu
+        setSelected(s => {
+          let n = s + delta;
+          if (n < 0) n = max - 1;
+          if (n >= max) n = 0;
+          return n;
+        });
+        if (listRef.current) listRef.current.scrollTop = selected * 20;
       };
 
       const startRotate = (e) => {
         e.preventDefault();
         let lastA = null;
         const rot = (evt) => {
-          const r = wheelRef.current.getBoundingClientRect(), cx = r.left + r.width/2, cy = r.top + r.height/2,
-          dx = evt.clientX - cx, dy = evt.clientY - cy, a = Math.atan2(dy, dx) * (180/Math.PI);
-          if (lastA !== null) { let d = a - lastA; if (d > 180) d -= 360; if (d < -180) d += 360; if (Math.abs(d) > 10) handleWheel(d > 0 ? 1 : -1); }
-          lastA = a;
+          const { clientX, clientY } = evt.touches ? evt.touches[0] : evt;
+          const r = wheelRef.current.getBoundingClientRect();
+          const cx = r.left + r.width/2, cy = r.top + r.height/2;
+          const dx = clientX - cx, dy = clientY - cy;
+          const a = Math.atan2(dy, dx) * (180/Math.PI);
+          if (lastA !== null) {
+            let d = a - lastA;
+            if (d > 180) d -= 360; if (d < -180) d += 360;
+            if (Math.abs(d) > 5) { handleWheel(d > 0 ? 1 : -1); lastA = a; }
+          } else lastA = a;
         };
-        const stop = () => { window.removeEventListener('mousemove', rot); window.removeEventListener('mouseup', stop); };
+        const stop = () => {
+          window.removeEventListener('mousemove', rot); window.removeEventListener('mouseup', stop);
+          window.removeEventListener('touchmove', rot); window.removeEventListener('touchend', stop);
+        };
         window.addEventListener('mousemove', rot); window.addEventListener('mouseup', stop);
+        window.addEventListener('touchmove', rot, { passive: false });
+        window.addEventListener('touchend', stop);
+      };
+
+      const menuItems = ['Ver Cola', 'Añadir Música', 'Añadir Video', 'Biblioteca Música', 'Biblioteca Videos', 'Cámara Retro', 'Configuración'];
+
+      const selectItem = () => {
+        vibrate();
+        const item = menuItems[selected];
+        if (item === 'Añadir Música') { fileInputRef.current.accept = 'audio/*'; fileInputRef.current.click(); }
+        else if (item === 'Añadir Video') { fileInputRef.current.accept = 'video/*'; fileInputRef.current.click(); }
+        else if (item === 'Configuración') { setScreenOff(true); }
       };
 
       return !loggedIn ? (
-        <div><input placeholder="Usuario" value={username} onChange={e => setUsername(e.target.value)} />
-        <input placeholder="PIN" value={pin} maxLength="4" onChange={e => setPin(e.target.value.replace(/\D/g,''))} /><br/>
-        <button onClick={handleLogin}>Entrar</button></div>
+        <div>
+          <input placeholder="Usuario" value={username} onChange={e => setUsername(e.target.value)} /><br/>
+          <input placeholder="PIN" value={pin} maxLength="4" onChange={e => setPin(e.target.value.replace(/\D/g,''))} /><br/>
+          <button onClick={handleLogin}>Entrar</button>
+        </div>
       ) : (
         <div className="ipod-shell">
           <div className={`ipod-screen ${screenOff ? 'off' : ''}`}>
             {screenOff ? <div>Pantalla Apagada</div> : <>
               <div className="status-bar">Bat: {battery} | {audioOut}</div>
               <div className="list-container" ref={listRef}>
-                {(screen==='menu'?menuItems:configItems).map((item,i) => (
+                {menuItems.map((item,i) => (
                   <div key={i} className={`screen-item ${i===selected?'selected':''}`}>{item}</div>
                 ))}
               </div>
-              <div className="progress-bar"><div className="progress" style={{width: `${progress*100}%`}}></div></div>
+              <div className="progress-bar"><div className="progress" style={{width:`${progress*100}%`}}></div></div>
             </>}
           </div>
-          <input type="file" ref={fileInputRef} style={{display:'none'}} multiple onChange={()=>handleFileInput(screen==='menu'&&menuItems[selected]==='Añadir Música'?'songs':'videos')} />
-          <div className="clickwheel" ref={wheelRef} onMouseDown={startRotate}>
-            <div className="btn menu" onClick={()=>{setScreen('menu');setSelected(0);}}>MENU</div>
-            <div className="btn play" onClick={togglePlay}>Play</div>
+          <input type="file" ref={fileInputRef} style={{display:'none'}} multiple />
+          <div className="clickwheel" ref={wheelRef} onMouseDown={startRotate} onTouchStart={startRotate}>
+            <div className="btn menu" onClick={()=>{setScreen('menu'); setSelected(0); vibrate();}}>MENU</div>
+            <div className="btn play" onClick={()=>{vibrate();}}>Play</div>
             <div className="center-button" onClick={selectItem}></div>
           </div>
           <div className="volume-btn volume-up" onClick={volUp}></div>
           <div className="volume-btn volume-down" onClick={volDown}></div>
           <audio ref={audioRef}></audio>
-          <video ref={videoRef} style={{display:'none'}}></video>
         </div>
       );
     }
+
     ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
 </body>
