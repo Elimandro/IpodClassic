@@ -1,1036 +1,115 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>iPod Classic PRO MAX Retro</title>
-<style>
-  /* Reset */
-  html, body {
-    margin: 0; padding: 0; height: 100%; overflow: hidden; touch-action: none;
-    background: #0a1633;
-    font-family: 'Lucida Console', Monaco, monospace;
-    user-select: none;
-  }
-  body.scaled {
-    transform: scale(0.85);
-    transform-origin: center center;
-  }
-
-  .ipod-shell {
-    width: 300px; height: 540px;
-    background: linear-gradient(180deg, #bbb 0%, #888 100%);
-    border-radius: 40px;
-    box-shadow:
-      inset 0 0 20px rgba(0,0,0,0.6),
-      0 20px 40px rgba(0,0,0,0.7);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    position: relative;
-  }
-  /* Pantalla LCD retro */
-  .ipod-screen {
-    width: 240px; height: 220px;
-    background:
-      radial-gradient(circle at 30% 30%, #cce1ff 0%, #4a6ab9 100%);
-    border: 5px solid #1a2e6d;
-    border-radius: 15px;
-    box-shadow: inset 0 0 20px #24478f;
-    color: #d0e8ff;
-    font-size: 14px;
-    line-height: 1.3em;
-    padding: 10px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-  .ipod-screen.off {
-    background: #00102a;
-    color: #00102a;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 16px;
-  }
-  .status-bar {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    margin-bottom: 6px;
-    font-weight: bold;
-    color: #a4c0ff;
-    user-select: none;
-  }
-  /* Lista scrollable */
-  .list-container {
-    flex: 1;
-    overflow-y: auto;
-    border-top: 2px solid #13316e;
-    border-bottom: 2px solid #13316e;
-    margin-bottom: 8px;
-  }
-  .screen-item {
-    padding: 6px 10px;
-    border-radius: 6px;
-    cursor: default;
-  }
-  .screen-item.selected {
-    background: #0b1cc1;
-    color: #aaddff;
-    font-weight: bold;
-  }
-  /* Clickwheel */
-  .clickwheel {
-    width: 180px; height: 180px;
-    background: radial-gradient(circle at center, #ccc 0%, #666 90%);
-    border-radius: 50%;
-    margin-top: auto;
-    position: relative;
-    box-shadow: inset 0 0 30px rgba(0,0,0,0.6);
-    user-select: none;
-  }
-  .clickwheel::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background: radial-gradient(circle at center, rgba(255,255,255,0.3) 0%, transparent 70%);
-  }
-  .clickwheel .btn {
-    position: absolute;
-    font-size: 14px;
-    font-weight: bold;
-    color: #0b1cc1;
-    user-select: none;
-  }
-  .btn.menu { top: 15px; left: 50%; transform: translateX(-50%); }
-  .btn.back { left: 15px; top: 50%; transform: translateY(-50%); }
-  .btn.forward { right: 15px; top: 50%; transform: translateY(-50%); }
-  .btn.play { bottom: 15px; left: 50%; transform: translateX(-50%); }
-  .center-button {
-    width: 65px; height: 65px;
-    border-radius: 50%;
-    background: #112a87;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    cursor: pointer;
-    box-shadow:
-      inset 0 0 12px rgba(0,0,0,0.8),
-      0 2px 6px rgba(0,0,0,0.7);
-    transition: background 0.2s ease;
-  }
-  .center-button:active {
-    background: #05155a;
-  }
-
-  /* Volumen botones sobresalientes */
-  .volume-btn {
-    position: absolute;
-    width: 22px; height: 45px;
-    background: linear-gradient(180deg, #111a3f, #4a66b3);
-    border-radius: 12px;
-    opacity: 0.9;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.8);
-    transition: background 0.2s ease;
-    user-select: none;
-  }
-  .volume-btn:hover {
-    background: linear-gradient(180deg, #22339a, #7291ff);
-  }
-  .volume-up {
-    left: -26px;
-    top: 160px;
-  }
-  .volume-down {
-    left: -26px;
-    top: 215px;
-  }
-
-  /* Scrollbar estilo */
-  .list-container::-webkit-scrollbar {
-    width: 6px;
-  }
-  .list-container::-webkit-scrollbar-thumb {
-    background: #0b1cc1;
-    border-radius: 3px;
-  }
-
-  /* Reproductor multimedia */
-  .media-player {
-    width: 100%;
-    height: 130px;
-    background: #112a87;
-    border-radius: 10px;
-    box-shadow: inset 0 0 15px #24478f;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: #a4c0ff;
-    font-size: 14px;
-    user-select: none;
-  }
-  .media-player video, .media-player audio {
-    width: 90%;
-    border-radius: 8px;
-    outline: none;
-    margin-top: 10px;
-    background: black;
-  }
-  .media-player .title {
-    font-weight: bold;
-    text-align: center;
-    user-select: text;
-  }
-
-  /* Cámara */
-  .camera-view {
-    width: 100%;
-    height: 130px;
-    border-radius: 10px;
-    overflow: hidden;
-    position: relative;
-    background: black;
-  }
-  .camera-view video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  .camera-buttons {
-    margin-top: 6px;
-    display: flex;
-    justify-content: space-around;
-  }
-  .camera-buttons button {
-    background: #0b1cc1;
-    border: none;
-    border-radius: 6px;
-    padding: 8px 14px;
-    color: #a4c0ff;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    user-select: none;
-  }
-  .camera-buttons button:hover {
-    background: #123ea6;
-  }
-  .gallery-photos {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 8px;
-    max-height: 70px;
-    overflow-y: auto;
-  }
-  .gallery-photo {
-    width: 50px;
-    height: 50px;
-    border-radius: 6px;
-    object-fit: cover;
-    position: relative;
-  }
-  .gallery-photo button {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    background: #e03e3e;
-    border: none;
-    border-radius: 50%;
-    width: 18px;
-    height: 18px;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 14px;
-    line-height: 14px;
-    user-select: none;
-  }
-
-  /* Now playing bar */
-  .now-playing-bar {
-    position: absolute;
-    bottom: -22px;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    font-size: 11px;
-    color: #a4c0ff;
-    user-select: none;
-  }
-  .equalizer {
-    display: inline-block;
-    width: 30px;
-    height: 10px;
-    margin-top: 2px;
-  }
-  .equalizer div {
-    display: inline-block;
-    width: 3px;
-    background: #0b1cc1;
-    margin: 0 1px;
-    animation: bounce 1s infinite ease-in-out alternate;
-  }
-  .equalizer div:nth-child(2) { animation-delay: 0.2s; }
-  .equalizer div:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes bounce { from { height: 4px; } to { height: 10px; } }
-
-  /* Progress bar */
-  .progress-bar {
-    height: 4px;
-    width: 100%;
-    background: #041e70;
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .progress {
-    height: 100%;
-    background: #0b1cc1;
-    width: 0%;
-  }
-
-  /* Scrollbar en galería fotos */
-  .gallery-photos::-webkit-scrollbar {
-    height: 6px;
-  }
-  .gallery-photos::-webkit-scrollbar-thumb {
-    background: #0b1cc1;
-    border-radius: 3px;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <title>iPod Classic PRO MAX Retro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    html, body { margin:0; height:100%; overflow:hidden; touch-action:none; background:#cfd4d8; display:flex; justify-content:center; align-items:center; }
+    .ipod-shell { width:300px; height:540px; background:linear-gradient(to bottom,#ddd,#aaa); border-radius:40px; box-shadow:inset 0 0 10px rgba(0,0,0,0.4), 0 10px 30px rgba(0,0,0,0.4); display:flex; flex-direction:column; align-items:center; padding:20px; position:relative; }
+    .ipod-screen { width:240px; height:220px; background:radial-gradient(circle at 30% 30%,#e0f1f5 0%,#b3cbd4 100%); border:4px solid #333; border-radius:14px; box-shadow:inset 0 0 15px rgba(0,0,0,0.3); overflow:auto; font-size:12px; padding:10px; }
+    .ipod-screen.off { background:#000; color:#fff; display:flex; justify-content:center; align-items:center; }
+    .status-bar { font-size:10px; display:flex; justify-content:space-between; margin-bottom:6px; }
+    .screen-item { padding:4px; border-radius:4px; }
+    .screen-item.selected { background:#007aff; color:#fff; }
+    .clickwheel { width:180px; height:180px; background:radial-gradient(circle,#ddd,#999); border-radius:50%; margin-top:auto; position:relative; box-shadow:inset 0 0 25px rgba(0,0,0,0.4); }
+    .btn { position:absolute; font-size:10px; font-weight:bold; }
+    .btn.menu { top:12px; left:50%; transform:translateX(-50%); }
+    .btn.back { left:10px; top:50%; transform:translateY(-50%); }
+    .btn.forward { right:10px; top:50%; transform:translateY(-50%); }
+    .btn.play { bottom:12px; left:50%; transform:translateX(-50%); }
+    .center-button { width:60px; height:60px; border-radius:50%; background:#555; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); cursor:pointer; box-shadow:inset 0 0 8px rgba(0,0,0,0.3); }
+    .volume-btn { position:absolute; width:20px; height:40px; background:#666; border-radius:10px; cursor:pointer; box-shadow:0 0 5px rgba(0,0,0,0.5); }
+    .volume-up { left:-30px; top:150px; }
+    .volume-down { left:-30px; top:200px; }
+    .now-playing-bar { font-size:10px; position:absolute; bottom:-20px; left:50%; transform:translateX(-50%); text-align:center; }
+    .equalizer div { display:inline-block; width:3px; background:#007aff; margin:0 1px; height:5px; animation:bounce 1s infinite alternate; }
+    .equalizer div:nth-child(2) { animation-delay:0.2s; }
+    .equalizer div:nth-child(3) { animation-delay:0.4s; }
+    @keyframes bounce { from {height:4px;} to {height:10px;} }
+    .gallery-photo { width:100%; border-radius:6px; margin:5px 0; }
+  </style>
 </head>
 <body>
-<div id="root"></div>
+  <div id="root"></div>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    const {useState,useEffect,useRef} = React;
+    function App(){
+      const [username,setUsername] = useState('');
+      const [pin,setPin] = useState('');
+      const [loggedIn,setLoggedIn] = useState(false);
+      const [screen,setScreen] = useState('menu');
+      const [selected,setSelected] = useState(0);
+      const [songs,setSongs] = useState([]);
+      const [videos,setVideos] = useState([]);
+      const [photos,setPhotos] = useState([]);
+      const [queue,setQueue] = useState([]);
+      const [current,setCurrent] = useState(null);
+      const [playing,setPlaying] = useState(false);
+      const [volume,setVolume] = useState(0.5);
+      const [screenOff,setScreenOff] = useState(false);
+      const fileInputRef = useRef();
+      const videoCamRef = useRef();
+      const audioRef = useRef();
+      const listRef = useRef();
+      const lastAngle = useRef(null);
+      const menuItems = ['Ver Cola','Añadir Música','Añadir Video','Biblioteca Música','Biblioteca Videos','Cámara Retro','Configuración'];
 
-<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<script type="text/babel">
+      const vibrate = () => { if(navigator.vibrate) navigator.vibrate(30); };
+      const handleLogin = ()=>{ if(username.trim()===''||pin.length!==4){alert('Usuario y PIN requeridos'); return;} setLoggedIn(true); };
+      const saveData = ()=>{ localStorage.setItem(`${username}_${pin}_songs`,JSON.stringify(songs)); localStorage.setItem(`${username}_${pin}_videos`,JSON.stringify(videos)); localStorage.setItem(`${username}_${pin}_photos`,JSON.stringify(photos)); };
+      useEffect(()=>{ if(loggedIn){ setSongs(JSON.parse(localStorage.getItem(`${username}_${pin}_songs`)||'[]')); setVideos(JSON.parse(localStorage.getItem(`${username}_${pin}_videos`)||'[]')); setPhotos(JSON.parse(localStorage.getItem(`${username}_${pin}_photos`)||'[]')); } },[loggedIn]);
 
-const { useState, useEffect, useRef } = React;
-
-function App() {
-  // Estado login
-  const [username, setUsername] = useState('');
-  const [pin, setPin] = useState('');
-  const [loggedIn, setLoggedIn] = useState(false);
-
-  // Estado iPod
-  const [battery, setBattery] = useState('--%');
-  const [audioOut, setAudioOut] = useState('Altavoz');
-  const [screen, setScreen] = useState('menu'); // menú principal u otros
-  const [selected, setSelected] = useState(0);
-  const [volume, setVolume] = useState(0.5);
-  const [playing, setPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [currentIndex, setCurrentIndex] = useState(null); // index en cola actual
-  const [queue, setQueue] = useState([]);
-  const [screenOff, setScreenOff] = useState(false);
-
-  // Multimedia almacenado
-  const [songs, setSongs] = useState([]);
-  const [videos, setVideos] = useState([]);
-  const [photos, setPhotos] = useState([]);
-
-  // Cámara
-  const [cameraActive, setCameraActive] = useState(false);
-  const videoCamRef = useRef(null);
-  const mediaStreamRef = useRef(null);
-
-  // Referencias
-  const audioRef = useRef(null);
-  const wheelRef = useRef(null);
-  const listRef = useRef(null);
-  const fileInputRef = useRef(null);
-
-  // Llave para localStorage
-  const userKey = `${username}_${pin}`;
-
-  // Opciones menú principal
-  const menuItems = ['Ver Cola', 'Añadir Música', 'Añadir Video', 'Biblioteca Música', 'Biblioteca Videos', 'Cámara Retro', 'Configuración'];
-
-  // --- Carga datos desde localStorage al iniciar sesión
-  useEffect(() => {
-    if (!loggedIn) return;
-    setSongs(JSON.parse(localStorage.getItem(`${userKey}_songs`)) || []);
-    setVideos(JSON.parse(localStorage.getItem(`${userKey}_videos`)) || []);
-    setPhotos(JSON.parse(localStorage.getItem(`${userKey}_photos`)) || []);
-    setQueue(JSON.parse(localStorage.getItem(`${userKey}_queue`)) || []);
-    setCurrentIndex(null);
-    setScreen('menu');
-    setSelected(0);
-    document.body.classList.add('scaled');
-  }, [loggedIn]);
-
-  // --- Guarda en localStorage cuando cambian datos multimedia o cola
-  useEffect(() => {
-    if (!loggedIn) return;
-    localStorage.setItem(`${userKey}_songs`, JSON.stringify(songs));
-  }, [songs, userKey, loggedIn]);
-
-  useEffect(() => {
-    if (!loggedIn) return;
-    localStorage.setItem(`${userKey}_videos`, JSON.stringify(videos));
-  }, [videos, userKey, loggedIn]);
-
-  useEffect(() => {
-    if (!loggedIn) return;
-    localStorage.setItem(`${userKey}_photos`, JSON.stringify(photos));
-  }, [photos, userKey, loggedIn]);
-
-  useEffect(() => {
-    if (!loggedIn) return;
-    localStorage.setItem(`${userKey}_queue`, JSON.stringify(queue));
-  }, [queue, userKey, loggedIn]);
-
-  // --- Actualizar progreso reproducción audio
-  useEffect(() => {
-    if (!audioRef.current) return;
-    audioRef.current.volume = volume;
-    audioRef.current.ontimeupdate = () => {
-      if(audioRef.current.duration){
-        setProgress(audioRef.current.currentTime / audioRef.current.duration);
-      } else {
-        setProgress(0);
-      }
-    };
-    audioRef.current.onended = () => {
-      playNext();
-    };
-  }, [volume, audioRef]);
-
-  // --- Actualizar batería y audioOut
-  useEffect(() => {
-    if (!loggedIn) return;
-    if ('getBattery' in navigator) {
-      navigator.getBattery().then(bat => {
-        setBattery(Math.round(bat.level * 100) + '%');
-        bat.addEventListener('levelchange', () => setBattery(Math.round(bat.level * 100) + '%'));
-      });
-    }
-    if (navigator.mediaDevices?.enumerateDevices) {
-      navigator.mediaDevices.enumerateDevices().then(devs => {
-        const outs = devs.filter(d => d.kind === 'audiooutput');
-        setAudioOut(outs.length ? 'Audífonos' : 'Altavoz');
-      });
-    }
-  }, [loggedIn]);
-
-  // --- Vibrar pequeño
-  const vibrate = () => navigator.vibrate?.(20);
-
-  // --- Login handler
-  const handleLogin = () => {
-    if(!username.trim()) return alert('Debes ingresar usuario');
-    if(!/^\d{4}$/.test(pin)) return alert('PIN debe ser 4 dígitos numéricos');
-    setLoggedIn(true);
-  };
-
-  // --- Logout handler
-  const logout = () => {
-    setLoggedIn(false);
-    setUsername('');
-    setPin('');
-    setSongs([]);
-    setVideos([]);
-    setPhotos([]);
-    setQueue([]);
-    setCurrentIndex(null);
-    setScreen('menu');
-    setSelected(0);
-    document.body.classList.remove('scaled');
-  };
-
-  // --- Borrar todo multimedia y cola
-  const clearAll = () => {
-    if(window.confirm('¿Seguro que quieres borrar toda tu música, videos, fotos y cola?')){
-      setSongs([]);
-      setVideos([]);
-      setPhotos([]);
-      setQueue([]);
-      setCurrentIndex(null);
-      setScreen('menu');
-      setSelected(0);
-    }
-  };
-
-  // --- Añadir archivos al sistema (música o video)
-  const addFiles = (files) => {
-    if(!files.length) return;
-    vibrate();
-
-    const newSongs = [...songs];
-    const newVideos = [...videos];
-    let addedSomething = false;
-
-    for(const file of files){
-      const name = file.name;
-      const url = URL.createObjectURL(file);
-      const ext = name.split('.').pop().toLowerCase();
-
-      if(['mp3','wav','ogg','m4a'].includes(ext)){
-        if(!newSongs.find(s => s.name === name)){
-          newSongs.push({name, url});
-          addedSomething = true;
+      const nextItem = ()=>{ setSelected((s)=>s+1>=menuItems.length?0:s+1); vibrate(); };
+      const prevItem = ()=>{ setSelected((s)=>s-1<0?menuItems.length-1:s-1); vibrate(); };
+      const onRotate = (e)=>{
+        const rect = e.currentTarget.getBoundingClientRect();
+        const cx = rect.left+rect.width/2, cy = rect.top+rect.height/2;
+        const x = e.clientX || e.touches?.[0].clientX, y = e.clientY || e.touches?.[0].clientY;
+        const angle = Math.atan2(y-cy,x-cx)*180/Math.PI;
+        if(lastAngle.current!==null){
+          let delta = angle - lastAngle.current;
+          if(delta>180) delta-=360; if(delta<-180) delta+=360;
+          if(Math.abs(delta)>15){ delta>0?nextItem():prevItem(); }
         }
-      } else if(['mp4','webm','mov'].includes(ext)){
-        if(!newVideos.find(v => v.name === name)){
-          newVideos.push({name, url});
-          addedSomething = true;
-        }
-      }
-    }
-    if(addedSomething){
-      setSongs(newSongs);
-      setVideos(newVideos);
-      alert('Archivos añadidos correctamente');
-    } else {
-      alert('No se añadieron archivos nuevos');
-    }
-  };
+        lastAngle.current=angle;
+      };
 
-  // --- Añadir foto a galería
-  const addPhoto = (dataUrl) => {
-    vibrate();
-    setPhotos(prev => [...prev, dataUrl]);
-  };
-
-  // --- Manejo clickwheel (menos sensible)
-  let lastAngle = null;
-  const onRotate = (e) => {
-    e.preventDefault();
-    const rect = wheelRef.current.getBoundingClientRect();
-    let clientX, clientY;
-    if(e.touches) {
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-    } else {
-      clientX = e.clientX;
-      clientY = e.clientY;
-    }
-    const cx = rect.left + rect.width/2;
-    const cy = rect.top + rect.height/2;
-    const dx = clientX - cx;
-    const dy = clientY - cy;
-    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-
-    if(lastAngle !== null){
-      let delta = angle - lastAngle;
-      if(delta > 180) delta -= 360;
-      if(delta < -180) delta += 360;
-      // Umbral para evitar exceso de scroll
-      if(Math.abs(delta) > 15){
-        if(delta > 0) nextItem();
-        else prevItem();
+      const selectItem = ()=>{
         vibrate();
-      }
-    }
-    lastAngle = angle;
-  };
-  const startRotate = (e) => {
-    e.preventDefault();
-    lastAngle = null;
-    window.addEventListener('mousemove', onRotate);
-    window.addEventListener('touchmove', onRotate, {passive:false});
-    window.addEventListener('mouseup', stopRotate);
-    window.addEventListener('touchend', stopRotate);
-  };
-  const stopRotate = (e) => {
-    window.removeEventListener('mousemove', onRotate);
-    window.removeEventListener('touchmove', onRotate);
-    window.removeEventListener('mouseup', stopRotate);
-    window.removeEventListener('touchend', stopRotate);
-  };
-
-  // --- Cambiar elemento seleccionado en menú/pantallas scroll
-  const nextItem = () => {
-    let listLen = 0;
-    if(screen === 'menu') listLen = menuItems.length;
-    else if(screen === 'queue') listLen = queue.length;
-    else if(screen === 'librarySongs') listLen = songs.length;
-    else if(screen === 'libraryVideos') listLen = videos.length;
-    else if(screen === 'cameraGallery') listLen = photos.length;
-    else if(screen === 'settings') listLen = 3; // cerrar sesión, borrar todo, apagar
-    else listLen = 0;
-
-    if(listLen === 0) return;
-
-    setSelected((prev) => {
-      const next = prev + 1;
-      if(next >= listLen) return 0;
-      return next;
-    });
-
-    // Scroll para que se vea el item seleccionado en pantalla
-    if(listRef.current){
-      const children = listRef.current.children;
-      if(children.length > 0 && selected < children.length){
-        const el = children[selected];
-        if(el){
-          el.scrollIntoView({behavior:'smooth', block:'nearest'});
+        switch(screen){
+          case 'menu': const item = menuItems[selected]; if(item==='Ver Cola') setScreen('queue'); else if(item==='Añadir Música') openFilePicker('audio/*'); else if(item==='Añadir Video') openFilePicker('video/*'); else if(item==='Biblioteca Música') setScreen('librarySongs'); else if(item==='Biblioteca Videos') setScreen('libraryVideos'); else if(item==='Cámara Retro') startCamera(); else if(item==='Configuración') setScreen('settings'); break;
+          case 'queue': if(queue.length>0) { setCurrent(queue[selected]); setPlaying(true); }
         }
-      }
+      };
+
+      const openFilePicker=(accept)=>{ if(fileInputRef.current){ fileInputRef.current.accept=accept; fileInputRef.current.multiple=true; fileInputRef.current.click(); } };
+      const onFilesSelected=(e)=>{ const files=[...e.target.files]; files.forEach(f=>{ const url=URL.createObjectURL(f); const name=f.name; if(f.type.startsWith('audio')) setSongs(prev=>{const all=[...prev,{name,url}]; saveData(); return all;}); if(f.type.startsWith('video')) setVideos(prev=>{const all=[...prev,{name,url}]; saveData(); return all;}); }); };
+      const startCamera=()=>{ setScreen('camera'); navigator.mediaDevices.getUserMedia({video:true}).then(stream=>{ videoCamRef.current.srcObject=stream; videoCamRef.current.play(); }).catch(()=>alert('No se pudo abrir cámara')); };
+      const takePhoto=()=>{ const canvas=document.createElement('canvas'); const video=videoCamRef.current; canvas.width=video.videoWidth; canvas.height=video.videoHeight; const ctx=canvas.getContext('2d'); ctx.filter='grayscale(1)'; ctx.drawImage(video,0,0); const dataUrl=canvas.toDataURL(); setPhotos(p=>{const all=[...p,dataUrl]; saveData(); return all;}); };
+      const volUp=()=>{ setVolume(v=>Math.min(1,v+0.1)); vibrate(); };
+      const volDown=()=>{ setVolume(v=>Math.max(0,v-0.1)); vibrate(); };
+      const renderScreen=()=>{ if(screen==='menu') return menuItems.map((m,i)=><div key={i} className={`screen-item ${selected===i?'selected':''}`}>{m}</div>); if(screen==='queue') return queue.map((q,i)=><div key={i} className={`screen-item ${selected===i?'selected':''}`}>{q.name}</div>); if(screen==='librarySongs') return songs.map((s,i)=><div key={i} className={`screen-item`}>{s.name}</div>); if(screen==='libraryVideos') return videos.map((v,i)=><div key={i} className={`screen-item`}>{v.name}</div>); if(screen==='camera') return <><video ref={videoCamRef} width="100%" autoPlay muted playsInline></video><button onClick={takePhoto}>📸</button></>; };
+
+      if(!loggedIn) return <div><input placeholder="Usuario" value={username} onChange={e=>setUsername(e.target.value)}/><input placeholder="PIN" maxLength="4" value={pin} onChange={e=>setPin(e.target.value.replace(/\D/g,''))}/><button onClick={handleLogin}>Entrar</button></div>;
+      return <div className="ipod-shell">
+        <div className="ipod-screen">{renderScreen()}</div>
+        <input ref={fileInputRef} style={{display:'none'}} type="file" onChange={onFilesSelected} />
+        <div className="clickwheel" onMouseDown={onRotate} onTouchStart={onRotate}>
+          <div className="btn menu" onClick={()=>setScreen('menu')}>MENU</div>
+          <div className="btn back" onClick={()=>{setScreen('menu');}}>←</div>
+          <div className="btn forward" onClick={()=>{}}>→</div>
+          <div className="btn play" onClick={()=>{setPlaying(!playing);}}>▶️</div>
+          <div className="center-button" onClick={selectItem}></div>
+        </div>
+        <div className="volume-btn volume-up" onClick={volUp}>+</div>
+        <div className="volume-btn volume-down" onClick={volDown}>-</div>
+      </div>;
     }
-  };
-  const prevItem = () => {
-    let listLen = 0;
-    if(screen === 'menu') listLen = menuItems.length;
-    else if(screen === 'queue') listLen = queue.length;
-    else if(screen === 'librarySongs') listLen = songs.length;
-    else if(screen === 'libraryVideos') listLen = videos.length;
-    else if(screen === 'cameraGallery') listLen = photos.length;
-    else if(screen === 'settings') listLen = 3;
-    else listLen = 0;
-
-    if(listLen === 0) return;
-
-    setSelected((prev) => {
-      const next = prev -1;
-      if(next < 0) return listLen - 1;
-      return next;
-    });
-
-    // Scroll para que se vea el item seleccionado en pantalla
-    if(listRef.current){
-      const children = listRef.current.children;
-      if(children.length > 0 && selected < children.length){
-        const el = children[selected];
-        if(el){
-          el.scrollIntoView({behavior:'smooth', block:'nearest'});
-        }
-      }
-    }
-  };
-
-  // --- Seleccionar item actual según pantalla
-  const selectItem = () => {
-    vibrate();
-    if(screen === 'menu'){
-      const sel = menuItems[selected];
-      switch(sel){
-        case 'Ver Cola': setScreen('queue'); setSelected(0); break;
-        case 'Añadir Música': openFilePicker('audio/*'); break;
-        case 'Añadir Video': openFilePicker('video/*'); break;
-        case 'Biblioteca Música': setScreen('librarySongs'); setSelected(0); break;
-        case 'Biblioteca Videos': setScreen('libraryVideos'); setSelected(0); break;
-        case 'Cámara Retro': startCamera(); break;
-        case 'Configuración': setScreen('settings'); setSelected(0); break;
-        default: break;
-      }
-    } else if(screen === 'queue'){
-      // Reproducir canción/video en cola
-      if(queue.length === 0) return;
-      setCurrentIndex(selected);
-      setPlaying(true);
-    } else if(screen === 'librarySongs'){
-      if(songs.length === 0) return;
-      // Añadir canción seleccionada a la cola
-      const s = songs[selected];
-      if(!queue.find(q => q.url === s.url)){
-        setQueue(prev => [...prev, {...s, type:'audio'}]);
-        alert(`"${s.name}" añadida a la cola`);
-      }
-    } else if(screen === 'libraryVideos'){
-      if(videos.length === 0) return;
-      // Añadir video a la cola
-      const v = videos[selected];
-      if(!queue.find(q => q.url === v.url)){
-        setQueue(prev => [...prev, {...v, type:'video'}]);
-        alert(`"${v.name}" añadido a la cola`);
-      }
-    } else if(screen === 'cameraGallery'){
-      // Nada para seleccionar en fotos (usar botón para borrar)
-    } else if(screen === 'settings'){
-      switch(selected){
-        case 0: logout(); break;
-        case 1: clearAll(); break;
-        case 2: setScreenOff(true); break;
-        default: break;
-      }
-    }
-  };
-
-  // --- Abrir selector de archivos (audio o video)
-  const openFilePicker = (accept) => {
-    if(!fileInputRef.current) return;
-    fileInputRef.current.accept = accept;
-    fileInputRef.current.multiple = true;
-    fileInputRef.current.click();
-  };
-  // --- Manejar archivos seleccionados
-  const onFilesSelected = (e) => {
-    addFiles(e.target.files);
-    e.target.value = ''; // reset input
-  };
-
-  // --- Reproducir siguiente en cola
-  const playNext = () => {
-    if(queue.length === 0) {
-      setCurrentIndex(null);
-      setPlaying(false);
-      return;
-    }
-    let nextIndex = currentIndex === null ? 0 : currentIndex + 1;
-    if(nextIndex >= queue.length) nextIndex = 0;
-    setCurrentIndex(nextIndex);
-    setPlaying(true);
-  };
-
-  // --- Reproducir anterior en cola
-  const playPrev = () => {
-    if(queue.length === 0) return;
-    let prevIndex = currentIndex === null ? 0 : currentIndex -1;
-    if(prevIndex < 0) prevIndex = queue.length -1;
-    setCurrentIndex(prevIndex);
-    setPlaying(true);
-  };
-
-  // --- Play/Pause toggle
-  const togglePlay = () => {
-    if(currentIndex === null) return;
-    if(!audioRef.current) return;
-
-    if(playing){
-      audioRef.current.pause();
-      setPlaying(false);
-    } else {
-      audioRef.current.play();
-      setPlaying(true);
-    }
-  };
-
-  // --- Volumen subir/bajar
-  const volUp = () => {
-    setVolume(v => Math.min(1, v + 0.1));
-    vibrate();
-  };
-  const volDown = () => {
-    setVolume(v => Math.max(0, v - 0.1));
-    vibrate();
-  };
-
-  // --- Botones clickwheel funciones
-  const onMenuClick = () => { setScreen('menu'); setSelected(0); vibrate(); };
-  const onBackClick = () => {
-    if(screen === 'queue' || screen === 'librarySongs' || screen === 'libraryVideos' || screen === 'cameraGallery' || screen === 'settings'){
-      setScreen('menu'); setSelected(0); vibrate();
-    } else if(currentIndex !== null && audioRef.current){
-      audioRef.current.currentTime = 0;
-      vibrate();
-    }
-  };
-  const onForwardClick = () => {
-    if(currentIndex !== null && audioRef.current){
-      audioRef.current.currentTime = audioRef.current.duration || 0;
-      vibrate();
-    }
-  };
-  const onCenterClick = () => {
-    selectItem();
-  };
-
-  // --- Cámara: iniciar stream
-  const startCamera = () => {
-    vibrate();
-    setScreen('camera');
-    setSelected(0);
-    setCameraActive(true);
-    navigator.mediaDevices.getUserMedia({video:true, audio:false})
-      .then(stream => {
-        mediaStreamRef.current = stream;
-        if(videoCamRef.current){
-          videoCamRef.current.srcObject = stream;
-          videoCamRef.current.play();
-        }
-      }).catch(() => {
-        alert('No se pudo acceder a la cámara');
-        setScreen('menu');
-        setCameraActive(false);
-      });
-  };
-  // --- Cámara: tomar foto
-  const takePhoto = () => {
-    if(!videoCamRef.current) return;
-    const video = videoCamRef.current;
-    const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth || 320;
-    canvas.height = video.videoHeight || 240;
-    const ctx = canvas.getContext('2d');
-    // Filtro retro (blanco y negro)
-    ctx.filter = 'grayscale(1) contrast(1.5) brightness(1.1)';
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const dataUrl = canvas.toDataURL('image/png');
-    addPhoto(dataUrl);
-  };
-  // --- Cámara: cerrar cámara
-  const closeCamera = () => {
-    vibrate();
-    if(mediaStreamRef.current){
-      mediaStreamRef.current.getTracks().forEach(t => t.stop());
-      mediaStreamRef.current = null;
-    }
-    setCameraActive(false);
-    setScreen('cameraGallery');
-    setSelected(0);
-  };
-  // --- Borrar foto
-  const deletePhoto = (index) => {
-    vibrate();
-    if(!window.confirm('¿Eliminar esta foto?')) return;
-    setPhotos(prev => {
-      const copy = [...prev];
-      copy.splice(index,1);
-      return copy;
-    });
-  };
-
-  // --- Render pantalla según estado
-  const renderScreen = () => {
-    if(screenOff) return <div className="ipod-screen off">Pantalla Apagada</div>;
-
-    switch(screen){
-      case 'menu':
-        return <>
-          <div className="status-bar">Bat: {battery} | {audioOut}</div>
-          <div className="list-container" ref={listRef}>
-            {menuItems.map((item,i) => (
-              <div key={i} className={`screen-item ${selected===i ? 'selected' : ''}`}>
-                {item}
-              </div>
-            ))}
-          </div>
-        </>;
-      case 'queue':
-        if(queue.length === 0) return <div className="ipod-screen"><p>Cola vacía.</p></div>;
-        return <>
-          <div className="status-bar">Bat: {battery} | {audioOut}</div>
-          <div className="list-container" ref={listRef}>
-            {queue.map((item,i) => (
-              <div key={i} className={`screen-item ${selected===i ? 'selected' : ''}`}>
-                [{item.type === 'audio' ? '🎵' : '🎥'}] {item.name}
-              </div>
-            ))}
-          </div>
-        </>;
-      case 'librarySongs':
-        if(songs.length === 0) return <div className="ipod-screen"><p>Biblioteca de música vacía.</p></div>;
-        return <>
-          <div className="status-bar">Bat: {battery} | {audioOut}</div>
-          <div className="list-container" ref={listRef}>
-            {songs.map((song,i) => (
-              <div key={i} className={`screen-item ${selected===i ? 'selected' : ''}`}>
-                🎵 {song.name}
-              </div>
-            ))}
-          </div>
-          <small style={{color:'#99bff9'}}>Presiona centro para añadir a cola</small>
-        </>;
-      case 'libraryVideos':
-        if(videos.length === 0) return <div className="ipod-screen"><p>Biblioteca de videos vacía.</p></div>;
-        return <>
-          <div className="status-bar">Bat: {battery} | {audioOut}</div>
-          <div className="list-container" ref={listRef}>
-            {videos.map((video,i) => (
-              <div key={i} className={`screen-item ${selected===i ? 'selected' : ''}`}>
-                🎥 {video.name}
-              </div>
-            ))}
-          </div>
-          <small style={{color:'#99bff9'}}>Presiona centro para añadir a cola</small>
-        </>;
-      case 'camera':
-        return <>
-          <div className="status-bar">Bat: {battery} | {audioOut}</div>
-          <div className="camera-view">
-            <video ref={videoCamRef} autoPlay muted playsInline></video>
-          </div>
-          <div className="camera-buttons">
-            <button onClick={takePhoto}>📸 Tomar Foto</button>
-            <button onClick={closeCamera}>Cerrar Cámara</button>
-          </div>
-        </>;
-      case 'cameraGallery':
-        if(photos.length === 0) return <>
-          <div className="status-bar">Bat: {battery} | {audioOut}</div>
-          <div>No hay fotos tomadas.</div>
-        </>;
-        return <>
-          <div className="status-bar">Bat: {battery} | {audioOut}</div>
-          <div className="gallery-photos" ref={listRef}>
-            {photos.map((photo,i) => (
-              <div key={i} style={{position:'relative'}}>
-                <img src={photo} alt={`Foto ${i+1}`} className="gallery-photo" />
-                <button onClick={() => deletePhoto(i)}>×</button>
-              </div>
-            ))}
-          </div>
-          <small style={{color:'#99bff9'}}>Mantén pulsado o usa botón para borrar</small>
-        </>;
-      case 'settings':
-        return <>
-          <div className="status-bar">Bat: {battery} | {audioOut}</div>
-          <div className="list-container" ref={listRef}>
-            <div className={`screen-item ${selected===0 ? 'selected' : ''}`}>Cerrar Sesión</div>
-            <div className={`screen-item ${selected===1 ? 'selected' : ''}`}>Borrar Todo</div>
-            <div className={`screen-item ${selected===2 ? 'selected' : ''}`}>Apagar Pantalla</div>
-          </div>
-        </>;
-      case 'playing':
-        if(currentIndex === null) return <div>No hay reproducción</div>;
-        const currentItem = queue[currentIndex];
-        if(!currentItem) return <div>No hay reproducción</div>;
-        return <>
-          <div className="status-bar">Bat: {battery} | {audioOut}</div>
-          <div className="media-player">
-            <div className="title">{currentItem.name}</div>
-            {currentItem.type === 'audio' ? (
-              <audio
-                ref={audioRef}
-                src={currentItem.url}
-                controls
-                autoPlay={playing}
-                onPlay={() => setPlaying(true)}
-                onPause={() => setPlaying(false)}
-              />
-            ) : (
-              <video
-                ref={audioRef}
-                src={currentItem.url}
-                controls
-                autoPlay={playing}
-                onPlay={() => setPlaying(true)}
-                onPause={() => setPlaying(false)}
-              />
-            )}
-          </div>
-        </>;
-      default:
-        return <div>Opción no implementada.</div>;
-    }
-  };
-
-  // --- Manejar reproducir/pausar cambio externo (audio/video)
-  useEffect(() => {
-    if(currentIndex === null){
-      setPlaying(false);
-      setProgress(0);
-      return;
-    }
-    setScreen('playing');
-    setSelected(0);
-    setPlaying(true);
-  }, [currentIndex]);
-
-  // --- Apagar y prender pantalla
-  const toggleScreenOff = () => {
-    vibrate();
-    if(screenOff) {
-      setScreenOff(false);
-      setScreen('menu');
-      setSelected(0);
-    } else {
-      setScreenOff(true);
-    }
-  };
-
-  // --- Render principal (login o iPod)
-  if(!loggedIn){
-    return (
-      <div style={{padding:'30px', color:'#c0d4ff'}}>
-        <h2>iPod Classic PRO MAX Retro</h2>
-        Usuario:<br/>
-        <input
-          value={username}
-          onChange={e => setUsername(e.target.value)}
-          style={{width:'100%', padding:'8px', borderRadius:'6px', border:'none', marginBottom:'10px', fontSize:'16px'}}
-          autoFocus
-        />
-        PIN (4 dígitos):<br/>
-        <input
-          type="password"
-          maxLength="4"
-          pattern="\d*"
-          inputMode="numeric"
-          value={pin}
-          onChange={e => setPin(e.target.value.replace(/\D/g, ''))}
-          style={{width:'100%', padding:'8px', borderRadius:'6px', border:'none', marginBottom:'15px', fontSize:'16px'}}
-        />
-        <button
-          onClick={handleLogin}
-          style={{width:'100%', padding:'12px', borderRadius:'8px', border:'none', background:'#0b1cc1', color:'white', fontWeight:'bold', fontSize:'16px', cursor:'pointer'}}
-        >Entrar</button>
-      </div>
-    );
-  }
-
-  // --- Elemento actual (canción/video)
-  const currentItem = currentIndex !== null ? queue[currentIndex] : null;
-
-  // --- Render iPod con pantalla y controles
-  return (
-    <div className="ipod-shell" role="main" aria-label="iPod Classic PRO MAX Retro">
-      <div className={`ipod-screen${screenOff ? ' off' : ''}`}>
-        {screenOff ? (
-          <div>Pantalla Apagada</div>
-        ) : (
-          renderScreen()
-        )}
-        {!screenOff && currentItem && playing && (
-          <div className="now-playing-bar">
-            {currentItem.name} &nbsp; {currentItem.type === 'audio' ? '🎵' : '🎥'}
-            <div className="equalizer">
-              <div></div><div></div><div></div>
-            </div>
-          </div>
-        )}
-        {!screenOff && <div className="progress-bar"><div className="progress" style={{width:`${progress*100}%`}}></div></div>}
-      </div>
-
-      <input
-        type="file"
-        ref={fileInputRef}
-        style={{display:'none'}}
-        onChange={onFilesSelected}
-        multiple
-      />
-
-      <div
-        className="clickwheel"
-        ref={wheelRef}
-        onMouseDown={startRotate}
-        onTouchStart={startRotate}
-        role="listbox"
-        aria-activedescendant={`item-${selected}`}
-        tabIndex={0}
-      >
-        <button className="btn menu" aria-label="Menú" onClick={onMenuClick}>Menú</button>
-        <button className="btn back" aria-label="Atrás" onClick={onBackClick}>←</button>
-        <button className="btn forward" aria-label="Adelante" onClick={onForwardClick}>→</button>
-        <button className="btn play" aria-label="Play/Pausa" onClick={togglePlay}>▶️⏸️</button>
-        <div
-          className="center-button"
-          role="button"
-          aria-label="Seleccionar"
-          tabIndex={0}
-          onClick={onCenterClick}
-          onKeyDown={e => {if(e.key === 'Enter') onCenterClick();}}
-        />
-      </div>
-
-      <button className="volume-btn volume-up" aria-label="Subir volumen" onClick={volUp}>+</button>
-      <button className="volume-btn volume-down" aria-label="Bajar volumen" onClick={volDown}>-</button>
-    </div>
-  );
-}
-
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-
-</script>
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
 </body>
 </html>
