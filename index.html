@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>iPod Classic Modern Clone</title>
+  <title>iPod Classic React Clone</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- React + Babel CDN -->
   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -19,11 +19,11 @@
       height: 100vh;
     }
     .ipod-shell {
-      width: 300px;
-      height: 520px;
-      background: #f8f8f8;
+      width: 280px;
+      height: 460px;
+      background: linear-gradient(to bottom, #e0e0e0, #aaa);
       border-radius: 40px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.4), inset 0 0 8px rgba(0,0,0,0.2);
+      box-shadow: inset 0 0 10px #0005, 0 10px 30px #0005;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -31,15 +31,23 @@
       position: relative;
     }
     .ipod-screen {
-      width: 240px;
-      height: 180px;
-      background: #e0e0e0;
-      border: 2px solid #333;
+      width: 220px;
+      height: 160px;
+      background: radial-gradient(circle at 30% 30%, #e0f1f5 0%, #b3cbd4 100%);
+      border: 4px solid #333;
       border-radius: 14px;
-      box-shadow: inset 0 0 12px rgba(0,0,0,0.2);
-      overflow: hidden;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
       position: relative;
       padding: 10px;
+      overflow: hidden;
+    }
+    .ipod-screen::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, transparent 0 2px, rgba(0,0,0,0.03) 2px 3px);
+      pointer-events: none;
+      border-radius: 14px;
     }
     .battery {
       position: absolute;
@@ -48,15 +56,11 @@
       font-size: 10px;
       color: #333;
     }
-    .screen-content {
-      margin-top: 18px;
-      font-size: 14px;
-    }
     .screen-item {
       padding: 4px;
       border-radius: 4px;
     }
-    .selected {
+    .screen-item.selected {
       background: #007aff;
       color: #fff;
     }
@@ -73,17 +77,26 @@
     .progress {
       height: 100%;
       background: #007aff;
-      width: 0%;
       border-radius: 2px;
+      width: 0%;
     }
     .clickwheel {
-      width: 200px;
-      height: 200px;
+      width: 180px;
+      height: 180px;
       background: radial-gradient(circle at center, #ddd 0%, #999 90%);
       border-radius: 50%;
       margin-top: auto;
       position: relative;
-      box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+      box-shadow: inset 0 0 25px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3);
+      cursor: pointer;
+    }
+    .clickwheel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(255,255,255,0.2) 0%, transparent 70%);
+      pointer-events: none;
     }
     .clickwheel .btn {
       position: absolute;
@@ -101,6 +114,7 @@
       position: absolute; top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       cursor: pointer;
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.3);
     }
     input, button {
       margin: 4px 0;
@@ -110,6 +124,7 @@
 </head>
 <body>
   <div id="root"></div>
+
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
 
@@ -266,7 +281,6 @@
         }
       }
 
-      // ClickWheel
       const wheelRef = useRef(null);
       let lastAngle = null;
       function startRotate(e) {
@@ -330,6 +344,7 @@
         </div>
       );
     }
+
     ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
 </body>
