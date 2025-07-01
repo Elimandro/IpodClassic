@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>iPod Classic React Clone</title>
+  <title>iPod Classic Clone - Admin Ready</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- React + Babel CDN -->
   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -11,7 +11,7 @@
   <style>
     body {
       margin: 0;
-      background: linear-gradient(to bottom, #dfe3e6, #b3b7bb);
+      background: #ddd;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       display: flex;
       justify-content: center;
@@ -19,11 +19,11 @@
       height: 100vh;
     }
     .ipod-shell {
-      width: 280px;
-      height: 460px;
-      background: linear-gradient(to bottom, #e0e0e0, #aaa);
+      width: 300px;
+      height: 520px;
+      background: #f8f8f8;
       border-radius: 40px;
-      box-shadow: inset 0 0 10px #0005, 0 10px 30px #0005;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.3), 0 8px 20px rgba(0,0,0,0.3);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -31,8 +31,8 @@
       position: relative;
     }
     .ipod-screen {
-      width: 220px;
-      height: 160px;
+      width: 240px;
+      height: 200px;
       background: radial-gradient(circle at 30% 30%, #e0f1f5 0%, #b3cbd4 100%);
       border: 4px solid #333;
       border-radius: 14px;
@@ -40,6 +40,7 @@
       position: relative;
       padding: 10px;
       overflow: hidden;
+      font-size: 12px;
     }
     .ipod-screen::before {
       content: '';
@@ -54,72 +55,37 @@
       top: 6px;
       right: 12px;
       font-size: 10px;
-      color: #333;
     }
-    .screen-item {
-      padding: 4px;
-      border-radius: 4px;
-    }
-    .screen-item.selected {
-      background: #007aff;
-      color: #fff;
-    }
-    .now-playing {
-      text-align: center;
-    }
-    .progress-bar {
-      width: 100%;
-      height: 4px;
-      background: #ccc;
-      margin-top: 8px;
-      border-radius: 2px;
-    }
-    .progress {
-      height: 100%;
-      background: #007aff;
-      border-radius: 2px;
-      width: 0%;
-    }
+    .screen-item { padding: 4px; border-radius: 4px; }
+    .screen-item.selected { background: #007aff; color: #fff; }
+    .now-playing, iframe { width: 100%; }
+    .progress-bar { width: 100%; height: 4px; background: #ccc; margin-top: 8px; border-radius: 2px; }
+    .progress { height: 100%; background: #007aff; border-radius: 2px; width: 0%; }
     .clickwheel {
-      width: 180px;
-      height: 180px;
+      width: 180px; height: 180px;
       background: radial-gradient(circle at center, #ddd 0%, #999 90%);
       border-radius: 50%;
-      margin-top: auto;
-      position: relative;
-      box-shadow: inset 0 0 25px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3);
-      cursor: pointer;
+      margin-top: auto; position: relative;
+      box-shadow: inset 0 0 25px rgba(0,0,0,0.4);
     }
     .clickwheel::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
+      content: ''; position: absolute; inset: 0; border-radius: 50%;
       background: radial-gradient(circle at center, rgba(255,255,255,0.2) 0%, transparent 70%);
-      pointer-events: none;
     }
     .clickwheel .btn {
-      position: absolute;
-      font-size: 10px;
-      font-weight: bold;
-      color: #333;
+      position: absolute; font-size: 10px; font-weight: bold; color: #333;
     }
     .btn.menu { top: 12px; left: 50%; transform: translateX(-50%); }
     .btn.back { left: 10px; top: 50%; transform: translateY(-50%); }
     .btn.forward { right: 10px; top: 50%; transform: translateY(-50%); }
     .btn.play { bottom: 12px; left: 50%; transform: translateX(-50%); }
     .center-button {
-      width: 60px; height: 60px;
-      border-radius: 50%; background: #555;
+      width: 60px; height: 60px; border-radius: 50%; background: #555;
       position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      cursor: pointer;
+      transform: translate(-50%, -50%); cursor: pointer;
       box-shadow: inset 0 0 8px rgba(0,0,0,0.3);
     }
-    input, button {
-      margin: 4px 0;
-      font-size: 12px;
-    }
+    input, button { margin: 2px 0; font-size: 12px; width: 100%; }
   </style>
 </head>
 <body>
@@ -135,12 +101,14 @@
       const [screen, setScreen] = useState('menu');
       const [selected, setSelected] = useState(0);
       const [songs, setSongs] = useState([]);
+      const [videos, setVideos] = useState([]);
       const [current, setCurrent] = useState(null);
+      const [currentVideo, setCurrentVideo] = useState(null);
       const [playing, setPlaying] = useState(false);
       const audioRef = useRef(null);
-      const ytTitleRef = useRef(null);
-      const ytUrlRef = useRef(null);
       const [progress, setProgress] = useState(0);
+      const titleRef = useRef();
+      const urlRef = useRef();
 
       useEffect(() => {
         if (loggedIn && 'getBattery' in navigator) {
@@ -155,8 +123,10 @@
 
       useEffect(() => {
         if (pin) {
-          const data = localStorage.getItem(pin);
-          setSongs(data ? JSON.parse(data) : []);
+          const s = localStorage.getItem(`${pin}_songs`);
+          const v = localStorage.getItem(`${pin}_videos`);
+          setSongs(s ? JSON.parse(s) : []);
+          setVideos(v ? JSON.parse(v) : []);
         }
       }, [pin]);
 
@@ -165,186 +135,145 @@
           audioRef.current.ontimeupdate = () => {
             setProgress(audioRef.current.duration ? audioRef.current.currentTime / audioRef.current.duration : 0);
           };
-          audioRef.current.onended = nextSong;
         }
       }, [current]);
 
-      function saveSongs(newSongs) {
-        localStorage.setItem(pin, JSON.stringify(newSongs));
-        setSongs(newSongs);
-      }
+      const saveData = () => {
+        localStorage.setItem(`${pin}_songs`, JSON.stringify(songs));
+        localStorage.setItem(`${pin}_videos`, JSON.stringify(videos));
+      };
 
-      function handleLogin() {
-        if (pin.length === 4) {
+      const handleLogin = () => {
+        if (/^\d{4}$/.test(pin)) {
           setLoggedIn(true);
           setScreen('menu');
           setSelected(0);
         } else {
-          alert('PIN debe tener 4 dígitos');
+          alert('PIN inválido: solo 4 dígitos numéricos');
         }
-      }
+      };
 
-      function renderScreen() {
+      const renderScreen = () => {
         if (screen === 'menu') {
-          const items = ['▶ Biblioteca','+ Añadir música'];
+          const items = [
+            '▶ Biblioteca Música',
+            '▶ Biblioteca Videos',
+            '+ Añadir Música',
+            '+ Añadir Video',
+            '⛔ Borrar Todo'
+          ];
+          if (pin === '0000') items.push('🗑️ Admin - Borrar PINs');
           return items.map((item, i) =>
             <div key={i} className={`screen-item ${i===selected?'selected':''}`}>{item}</div>);
         }
-        if (screen === 'library') {
-          if (songs.length === 0) return <div>No hay canciones.</div>;
-          return songs.map((song,i) =>
-            <div key={i} className={`screen-item ${i===selected?'selected':''}`}>{song.title}</div>);
+        if (screen === 'libraryMusic') {
+          return songs.length === 0 ? <div>No hay música.</div> :
+            songs.map((s,i)=>
+              <div key={i} className={`screen-item ${i===selected?'selected':''}`}>
+                {s.title} <button onClick={()=>delSong(i)}>X</button>
+              </div>);
         }
-        if (screen === 'add') {
-          return (
+        if (screen === 'libraryVideo') {
+          return videos.length === 0 ? <div>No hay videos.</div> :
+            videos.map((v,i)=>
+              <div key={i} className={`screen-item ${i===selected?'selected':''}`}>
+                {v.title} <button onClick={()=>delVideo(i)}>X</button>
+              </div>);
+        }
+        if (screen === 'addMusic' || screen === 'addVideo') {
+          return <>
+            Título:<br/><input ref={titleRef}/><br/>
+            URL MP3/YouTube:<br/><input ref={urlRef}/><br/>
+            <button onClick={screen==='addMusic'?addSong:addVideo}>Guardar</button>
+          </>
+        }
+        if (screen === 'nowPlaying') {
+          return !current ? <div>No hay canción.</div> :
             <>
-              Título:<br/>
-              <input ref={ytTitleRef}/><br/>
-              URL MP3:<br/>
-              <input ref={ytUrlRef}/><br/>
-              <button onClick={addSong}>Guardar</button>
-            </>
-          );
-        }
-        if (screen === 'nowplaying') {
-          if (!current) return <div>No hay canción seleccionada.</div>;
-          return (
-            <div className="now-playing">
               <div><strong>{current.title}</strong></div>
-              <div style={{fontSize: '10px', margin: '4px 0'}}>{playing ? '▶ Reproduciendo' : '❙❙ Pausado'}</div>
-              <div className="progress-bar"><div className="progress" style={{width: `${progress*100}%`}}></div></div>
-            </div>
-          );
+              <div>{playing ? '▶' : '❙❙'}</div>
+              <div className="progress-bar"><div className="progress" style={{width:`${progress*100}%`}}></div></div>
+            </>
         }
-      }
-
-      function addSong() {
-        const title = ytTitleRef.current.value.trim();
-        const url = ytUrlRef.current.value.trim();
-        if (title && url) {
-          const newList = [...songs, {title,url}];
-          saveSongs(newList);
-          alert('Añadido!');
-          setScreen('menu');
-          setSelected(0);
-        } else {
-          alert('Completa ambos campos');
+        if (screen === 'nowPlayingVideo') {
+          return !currentVideo ? <div>No hay video.</div> :
+            <iframe width="100%" height="120" src={currentVideo.url} frameBorder="0" allowFullScreen></iframe>;
         }
-      }
+        if (screen === 'admin') {
+          return Object.keys(localStorage).filter(k=>k.endsWith('_songs')).map(k=>{
+            const user = k.split('_')[0];
+            return <div key={user}>{user} <button onClick={()=>delPin(user)}>Borrar PIN</button></div>;
+          });
+        }
+      };
 
-      function selectItem() {
-        if (screen === 'menu') {
-          if (selected === 0) setScreen('library');
-          else if (selected === 1) setScreen('add');
+      const addSong = () => {
+        if (titleRef.current.value && urlRef.current.value) {
+          const newS = [...songs, {title:titleRef.current.value, url:urlRef.current.value}];
+          setSongs(newS); saveData(); alert('Añadido!'); setScreen('menu');
+        }
+      };
+      const addVideo = () => {
+        if (titleRef.current.value && urlRef.current.value) {
+          const newV = [...videos, {title:titleRef.current.value, url:urlRef.current.value}];
+          setVideos(newV); saveData(); alert('Añadido!'); setScreen('menu');
+        }
+      };
+
+      const delSong = (i) => { const s = songs.filter((_,idx)=>idx!==i); setSongs(s); saveData(); };
+      const delVideo = (i) => { const v = videos.filter((_,idx)=>idx!==i); setVideos(v); saveData(); };
+      const delAll = () => { if(confirm('¿Seguro?')) { setSongs([]); setVideos([]); saveData(); alert('Borrado!'); } };
+      const delPin = (p) => { localStorage.removeItem(`${p}_songs`); localStorage.removeItem(`${p}_videos`); alert(`PIN ${p} borrado`); };
+
+      const selectItem = () => {
+        if (screen==='menu') {
+          if (selected===0) setScreen('libraryMusic');
+          else if (selected===1) setScreen('libraryVideo');
+          else if (selected===2) setScreen('addMusic');
+          else if (selected===3) setScreen('addVideo');
+          else if (selected===4) delAll();
+          else if (selected===5) setScreen('admin');
           setSelected(0);
-        } else if (screen === 'library') {
-          const song = songs[selected];
-          if (song) {
-            setCurrent(song);
-            audioRef.current.src = song.url;
-            audioRef.current.play();
-            setPlaying(true);
-            setScreen('nowplaying');
+        } else if (screen==='libraryMusic') {
+          const s = songs[selected]; if (s) {
+            setCurrent(s); audioRef.current.src=s.url; audioRef.current.play(); setPlaying(true); setScreen('nowPlaying');
+          }
+        } else if (screen==='libraryVideo') {
+          const v = videos[selected]; if (v) {
+            setCurrentVideo(v); setScreen('nowPlayingVideo');
           }
         }
-      }
+      };
 
-      function prevItem() { setSelected(s => Math.max(0,s-1)); }
-      function nextItem() {
-        const max = screen==='menu'?1: songs.length-1;
-        setSelected(s => Math.min(max,s+1));
-      }
+      const prevItem = () => setSelected(Math.max(0,selected-1));
+      const nextItem = () => {
+        let max = 0;
+        if (screen==='menu') max = pin==='0000'?5:4;
+        else if (screen==='libraryMusic') max=songs.length-1;
+        else if (screen==='libraryVideo') max=videos.length-1;
+        setSelected(Math.min(max,selected+1));
+      };
+      const togglePlay = () => { if(current) { playing ? audioRef.current.pause() : audioRef.current.play(); setPlaying(!playing); }};
+      const wheelRef = useRef(null); let lastA=null;
+      const startRotate = (e)=>{ e.preventDefault(); lastA=null; window.addEventListener('mousemove',rot); window.addEventListener('touchmove',t=>rot({clientX:t.touches[0].clientX,clientY:t.touches[0].clientY})); window.addEventListener('mouseup',stop); window.addEventListener('touchend',stop);};
+      const stop = ()=>{window.removeEventListener('mousemove',rot);window.removeEventListener('touchmove',rot);};
+      const rot = (e)=>{const r=wheelRef.current.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,a=Math.atan2(dy,dx)*(180/Math.PI);if(lastA!==null){let d=a-lastA;if(d>180)d-=360;if(d<-180)d+=360;if(Math.abs(d)>10){d>0?nextItem():prevItem();}}lastA=a;};
 
-      function togglePlay() {
-        if (!current) return;
-        if (playing) { audioRef.current.pause(); setPlaying(false); }
-        else { audioRef.current.play(); setPlaying(true); }
-      }
+      if (!loggedIn) return <div>PIN:<br/><input maxLength="4" pattern="\d*" value={pin} onChange={e=>setPin(e.target.value.replace(/\D/g,''))}/><br/><button onClick={handleLogin}>Entrar</button></div>;
 
-      function nextSong() {
-        if (!current) return;
-        const idx = songs.findIndex(s=>s.title===current.title);
-        if (idx < songs.length-1) {
-          setCurrent(songs[idx+1]);
-          audioRef.current.src = songs[idx+1].url;
-          audioRef.current.play();
-        }
-      }
-
-      function prevSong() {
-        if (!current) return;
-        const idx = songs.findIndex(s=>s.title===current.title);
-        if (idx > 0) {
-          setCurrent(songs[idx-1]);
-          audioRef.current.src = songs[idx-1].url;
-          audioRef.current.play();
-        }
-      }
-
-      const wheelRef = useRef(null);
-      let lastAngle = null;
-      function startRotate(e) {
-        e.preventDefault();
-        lastAngle = null;
-        window.addEventListener('mousemove', rotate);
-        window.addEventListener('touchmove', rotateTouch);
-        window.addEventListener('mouseup', stopRotate);
-        window.addEventListener('touchend', stopRotate);
-      }
-      function stopRotate() {
-        window.removeEventListener('mousemove', rotate);
-        window.removeEventListener('touchmove', rotateTouch);
-      }
-      function rotateTouch(e) {
-        const t = e.touches[0];
-        rotate({clientX:t.clientX, clientY:t.clientY});
-      }
-      function rotate(e) {
-        const rect = wheelRef.current.getBoundingClientRect();
-        const cx = rect.left + rect.width/2;
-        const cy = rect.top + rect.height/2;
-        const dx = e.clientX - cx;
-        const dy = e.clientY - cy;
-        const angle = Math.atan2(dy,dx)*(180/Math.PI);
-        if (lastAngle !== null) {
-          let diff = angle - lastAngle;
-          if (diff>180) diff-=360;
-          if (diff<-180) diff+=360;
-          if (Math.abs(diff)>10) {
-            if (diff>0) nextItem();
-            else prevItem();
-          }
-        }
-        lastAngle = angle;
-      }
-
-      if (!loggedIn) {
-        return (
-          <div>
-            PIN:<br/>
-            <input type="password" maxLength="4" value={pin} onChange={e=>setPin(e.target.value)}/>
-            <br/><button onClick={handleLogin}>Entrar</button>
-          </div>
-        );
-      }
-
-      return (
-        <div className="ipod-shell">
-          <div className="battery">{battery}</div>
-          <div className="ipod-screen">{renderScreen()}</div>
-          <div className="clickwheel" ref={wheelRef}
-            onMouseDown={startRotate} onTouchStart={startRotate}>
-            <div className="btn menu" onClick={()=>{setScreen('menu'); setSelected(0);}}>MENU</div>
-            <div className="btn back" onClick={prevSong}>◁◁</div>
-            <div className="btn forward" onClick={nextSong}>▷▷</div>
-            <div className="btn play" onClick={togglePlay}>▶❙❙</div>
-            <div className="center-button" onClick={selectItem}></div>
-          </div>
-          <audio ref={audioRef}></audio>
+      return <div className="ipod-shell">
+        <div className="battery">{battery}</div>
+        <div className="ipod-screen">{renderScreen()}</div>
+        <div className="clickwheel" ref={wheelRef} onMouseDown={startRotate} onTouchStart={startRotate}>
+          <div className="btn menu" onClick={()=>setScreen('menu')}>MENU</div>
+          <div className="btn back" onClick={()=>audioRef.current.currentTime=0}>◁◁</div>
+          <div className="btn forward" onClick={()=>audioRef.current.currentTime=audioRef.current.duration}>▷▷</div>
+          <div className="btn play" onClick={togglePlay}>▶❙❙</div>
+          <div className="center-button" onClick={selectItem}></div>
         </div>
-      );
+        <audio ref={audioRef}></audio>
+      </div>;
     }
-
     ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
 </body>
