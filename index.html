@@ -20,15 +20,17 @@
     .ipod-shell {
       width: 300px; height: 540px;
       background: linear-gradient(to bottom, #ddd, #aaa);
-      border-radius: 40px; box-shadow: inset 0 0 10px rgba(0,0,0,0.4), 0 10px 30px rgba(0,0,0,0.4);
+      border-radius: 40px;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.4), 0 10px 30px rgba(0,0,0,0.4);
       display: flex; flex-direction: column; align-items: center; padding: 20px; position: relative;
     }
     .ipod-screen {
       width: 240px; height: 220px;
       background: radial-gradient(circle at 30% 30%, #e0f1f5 0%, #b3cbd4 100%);
-      border: 4px solid #333; border-radius: 14px; box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
-      position: relative; padding: 10px; overflow: hidden; font-size: 12px;
-      display: flex; flex-direction: column;
+      border: 4px solid #333; border-radius: 14px;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
+      position: relative; padding: 10px; overflow: hidden;
+      font-size: 12px; display: flex; flex-direction: column;
     }
     .ipod-screen::before {
       content: ''; position: absolute; inset: 0;
@@ -36,92 +38,97 @@
       pointer-events: none; border-radius: 14px;
     }
     .status-bar {
-      display: flex; justify-content: space-between; font-size: 10px; color: #333; margin-bottom: 6px;
-      z-index: 2;
+      display: flex; justify-content: space-between;
+      font-size: 10px; color: #333; margin-bottom: 6px; z-index: 2;
     }
-    .screen-item { padding: 4px; border-radius: 4px; cursor: default; user-select: none; }
-    .screen-item.selected { background: #007aff; color: #fff; }
+    .screen-item {
+      padding: 4px; border-radius: 4px; cursor: default; user-select: none;
+    }
+    .screen-item.selected {
+      background: #007aff; color: #fff;
+    }
     iframe, video, canvas { width: 100%; height: 100%; border: none; }
     .clickwheel {
-      width: 180px; height: 180px; background: radial-gradient(circle at center, #ddd 0%, #999 90%);
+      width: 180px; height: 180px;
+      background: radial-gradient(circle at center, #ddd 0%, #999 90%);
       border-radius: 50%; margin-top: auto; position: relative;
-      box-shadow: inset 0 0 25px rgba(0,0,0,0.4); touch-action: none;
+      box-shadow: inset 0 0 25px rgba(0,0,0,0.4);
+      touch-action: none;
     }
     .clickwheel::before {
       content: ''; position: absolute; inset: 0; border-radius: 50%;
       background: radial-gradient(circle at center, rgba(255,255,255,0.2) 0%, transparent 70%);
     }
     .clickwheel .btn {
-      position: absolute; font-size: 10px; font-weight: bold; color: #333;
-      user-select: none;
+      position: absolute; font-size: 10px; font-weight: bold;
+      color: #333; user-select: none;
     }
-    .btn.menu { top: 12px; left: 50%; transform: translateX(-50%); }
-    .btn.back { left: 10px; top: 50%; transform: translateY(-50%); }
-    .btn.forward { right: 10px; top: 50%; transform: translateY(-50%); }
-    .btn.play { bottom: 12px; left: 50%; transform: translateX(-50%); }
+    .btn.menu {
+      top: 12px; left: 50%; transform: translateX(-50%);
+    }
+    .btn.back {
+      left: 10px; top: 50%; transform: translateY(-50%);
+    }
+    .btn.forward {
+      right: 10px; top: 50%; transform: translateY(-50%);
+    }
+    .btn.play {
+      bottom: 12px; left: 50%; transform: translateX(-50%);
+    }
     .center-button {
-      width: 60px; height: 60px; border-radius: 50%; background: #555;
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      cursor: pointer; box-shadow: inset 0 0 8px rgba(0,0,0,0.3);
+      width: 60px; height: 60px;
+      border-radius: 50%; background: #555;
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.3);
       user-select: none;
     }
     .volume-btn {
       position: absolute; width: 20px; height: 40px;
-      background: #666; border-radius: 10px; opacity: 0.7; cursor: pointer;
+      background: #666; border-radius: 10px;
+      opacity: 0.7; cursor: pointer;
       box-shadow: 0 0 5px rgba(0,0,0,0.5);
       user-select: none;
     }
     .volume-up { left: -25px; top: 150px; }
     .volume-down { left: -25px; top: 200px; }
     .now-playing-bar {
-      position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%);
+      position: absolute; bottom: -20px; left: 50%;
+      transform: translateX(-50%);
       text-align: center; font-size: 10px;
     }
     .equalizer {
-      display: inline-block; width: 30px; height: 10px; margin-top: 2px;
+      display: inline-block; width: 30px; height: 10px;
+      margin-top: 2px;
     }
     .equalizer div {
-      display: inline-block; width: 3px; background: #007aff; margin: 0 1px; animation: bounce 1s infinite ease-in-out alternate;
+      display: inline-block; width: 3px;
+      background: #007aff; margin: 0 1px;
+      animation: bounce 1s infinite ease-in-out alternate;
     }
     .equalizer div:nth-child(2) { animation-delay: 0.2s; }
     .equalizer div:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes bounce { from { height: 4px; } to { height: 10px; } }
-
-    /* Progress bar styling */
+    @keyframes bounce {
+      from { height: 4px; } to { height: 10px; }
+    }
     .progress-bar {
-      position: absolute;
-      bottom: 5px;
-      left: 10px;
-      width: 220px;
-      height: 4px;
-      background: #ccc;
-      border-radius: 2px;
-      overflow: hidden;
-      z-index: 3;
+      position: absolute; bottom: 5px; left: 10px;
+      width: 220px; height: 4px; background: #ccc;
+      border-radius: 2px; overflow: hidden; z-index: 3;
     }
     .progress {
-      height: 100%;
-      background: #007aff;
-      width: 0%;
-      transition: width 0.2s linear;
+      height: 100%; background: #007aff;
+      width: 0%; transition: width 0.2s linear;
     }
-
-    /* Retro camera preview */
     .retro-video {
       filter: grayscale(70%) contrast(120%) brightness(90%) sepia(0.3) saturate(0.8);
-      border-radius: 10px;
-      width: 100%;
-      height: 160px;
-      background: black;
-      object-fit: cover;
+      border-radius: 10px; width: 100%; height: 160px;
+      background: black; object-fit: cover;
     }
-
-    /* Scrollable lists */
     .list-container {
-      overflow-y: auto;
-      flex-grow: 1;
-      padding-right: 4px;
-      margin-top: 4px;
+      overflow-y: auto; flex-grow: 1;
+      padding-right: 4px; margin-top: 4px;
     }
   </style>
 </head>
@@ -131,41 +138,44 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script type="text/babel">
-    const { useState, useEffect, useRef } = React;
+    const { useState,useEffect,useRef } = React;
+    
+        function App() {
+      // Estados para usuario, sesión y UI
+      const [username,setUsername] = useState('');
+      const [pin,setPin] = useState('');
+      const [loggedIn,setLoggedIn] = useState(false);
+      const [battery,setBattery] = useState('--%');
+      const [audioOut,setAudioOut] = useState('Altavoz');
+      const [screen,setScreen] = useState('menu');
+      const [selected,setSelected] = useState(0);
+      const [songs,setSongs] = useState([]);
+      const [videos,setVideos] = useState([]);
+      const [queue,setQueue] = useState([]);
+      const [current,setCurrent] = useState(null);
+      const [playing,setPlaying] = useState(false);
+      const [volume,setVolume] = useState(0.5);
+      const [showConfig,setShowConfig] = useState(false);
 
-    function App() {
-      const [username, setUsername] = useState('');
-      const [pin, setPin] = useState('');
-      const [loggedIn, setLoggedIn] = useState(false);
-      const [battery, setBattery] = useState('--%');
-      const [audioOut, setAudioOut] = useState('Altavoz');
-      const [screen, setScreen] = useState('menu');
-      const [selected, setSelected] = useState(0);
-      const [songs, setSongs] = useState([]);
-      const [videos, setVideos] = useState([]);
-      const [localFiles, setLocalFiles] = useState([]);
-      const [queue, setQueue] = useState([]);
-      const [current, setCurrent] = useState(null);
-      const [playing, setPlaying] = useState(false);
-      const [volume, setVolume] = useState(0.5);
+      // Referencias para audio, video, rueda y archivos
       const audioRef = useRef(null);
       const videoRef = useRef(null);
-      const [progress, setProgress] = useState(0);
-      const fileInputRef = useRef();
+      const wheelRef = useRef(null);
+      const fileInputRef = useRef(null);
 
       const userKey = `${username}_${pin}`;
 
-      // Battery and audio output detection
+      // Detectar batería y salida de audio
       useEffect(() => {
-        if (loggedIn && 'getBattery' in navigator) {
+        if(loggedIn && 'getBattery' in navigator){
           navigator.getBattery().then(bat => {
-            setBattery(Math.round(bat.level * 100) + '%');
+            setBattery(Math.round(bat.level*100) + '%');
             bat.addEventListener('levelchange', () => {
-              setBattery(Math.round(bat.level * 100) + '%');
+              setBattery(Math.round(bat.level*100) + '%');
             });
           });
         }
-        if (loggedIn && navigator.mediaDevices?.enumerateDevices) {
+        if(loggedIn && navigator.mediaDevices?.enumerateDevices){
           navigator.mediaDevices.enumerateDevices().then(devices => {
             const audioOuts = devices.filter(d => d.kind === 'audiooutput');
             setAudioOut(audioOuts.length > 0 ? 'Audífonos' : 'Altavoz');
@@ -173,9 +183,9 @@
         }
       }, [loggedIn]);
 
-      // Load data from localStorage on login
+      // Cargar canciones/videos guardados
       useEffect(() => {
-        if (loggedIn) {
+        if(loggedIn){
           const s = localStorage.getItem(`${userKey}_songs`);
           const v = localStorage.getItem(`${userKey}_videos`);
           setSongs(s ? JSON.parse(s) : []);
@@ -184,39 +194,47 @@
         }
       }, [loggedIn]);
 
-      // Update audio element volume and progress
+      // Guardar canciones/videos cuando cambian
       useEffect(() => {
-        if (audioRef.current) {
+        if(loggedIn){
+          localStorage.setItem(`${userKey}_songs`, JSON.stringify(songs));
+          localStorage.setItem(`${userKey}_videos`, JSON.stringify(videos));
+        }
+      }, [songs, videos]);
+
+      // Actualizar volumen y progreso audio
+      useEffect(() => {
+        if(audioRef.current){
           audioRef.current.volume = volume;
           audioRef.current.ontimeupdate = () => {
             setProgress(audioRef.current.duration ? audioRef.current.currentTime / audioRef.current.duration : 0);
           };
-          audioRef.current.onended = () => {
-            nextInQueue();
-          };
+          audioRef.current.onended = () => nextInQueue();
+        }
+        if(videoRef.current){
+          videoRef.current.volume = volume;
+          videoRef.current.onended = () => nextInQueue();
         }
       }, [current, volume]);
 
-      // Save songs/videos to localStorage when they change
-      useEffect(() => {
-        if (loggedIn) saveData();
-      }, [songs, videos]);
+      // Estado progreso reproducción
+      const [progress,setProgress] = useState(0);
 
-      const saveData = () => {
-        localStorage.setItem(`${userKey}_songs`, JSON.stringify(songs));
-        localStorage.setItem(`${userKey}_videos`, JSON.stringify(videos));
-      };
+      // Vibración al click
+      const vibrate = () => { if(navigator.vibrate) navigator.vibrate(30); };
 
-      const vibrate = () => { if (navigator.vibrate) navigator.vibrate(30); };
-
+      // Manejar login
       const handleLogin = () => {
-        if (username.trim() === '' || !/^\d{4}$/.test(pin)) {
-          alert('Usuario y PIN numérico de 4 dígitos requeridos'); return;
+        if(username.trim() === '' || !/^\d{4}$/.test(pin)){
+          alert('Usuario y PIN numérico de 4 dígitos requeridos');
+          return;
         }
-        setLoggedIn(true); setScreen('menu'); setSelected(0);
+        setLoggedIn(true);
+        setScreen('menu');
+        setSelected(0);
       };
 
-      // Navigation helpers
+      // Menú principal + configuración
       const menuItems = [
         'Ver cola',
         'Reproducir archivos locales',
@@ -225,29 +243,66 @@
         'Añadir video',
         'Biblioteca música',
         'Biblioteca videos',
-        'Borrar todo',
-        'Cerrar sesión',
+        'Configuración',
       ];
 
+      const configItems = [
+        'Borrar todo',
+        'Cerrar sesión',
+        'Volver',
+      ];
+
+      // Navegar entre opciones
       const nextItem = () => {
-        setSelected(s => (s + 1) % getCurrentMenuItems().length);
+        if(showConfig) setSelected(s => (s + 1) % configItems.length);
+        else setSelected(s => (s + 1) % menuItems.length);
       };
       const prevItem = () => {
-        setSelected(s => (s - 1 + getCurrentMenuItems().length) % getCurrentMenuItems().length);
+        if(showConfig) setSelected(s => (s - 1 + configItems.length) % configItems.length);
+        else setSelected(s => (s - 1 + menuItems.length) % menuItems.length);
       };
 
+      // Obtener lista actual para mostrar
       const getCurrentMenuItems = () => {
-        if (screen === 'menu') return menuItems;
-        if (screen === 'queue') return queue.length ? queue.map(i => i.title) : ['Cola vacía'];
-        if (screen === 'localfiles') return localFiles.length ? localFiles.map(f => f.name) : ['No hay archivos locales'];
-        if (screen === 'songs') return songs.length ? songs.map(s => s.title) : ['No hay música'];
-        if (screen === 'videos') return videos.length ? videos.map(v => v.title) : ['No hay videos'];
+        if(showConfig) return configItems;
+        if(screen === 'menu') return menuItems;
+        if(screen === 'queue') return queue.length ? queue.map(i => i.title) : ['Cola vacía'];
+        if(screen === 'localfiles') return localFiles.length ? localFiles.map(f => f.name) : ['No hay archivos locales'];
+        if(screen === 'songs') return songs.length ? songs.map(s => s.title) : ['No hay música'];
+        if(screen === 'videos') return videos.length ? videos.map(v => v.title) : ['No hay videos'];
         return [];
       };
 
-      // Select item logic depends on screen
+      // Manejo localFiles (archivos cargados pero no guardados aún)
+      const [localFiles,setLocalFiles] = useState([]);
+
+      // Seleccionar opción en menú o listas
       const selectItem = () => {
         vibrate();
+        if(showConfig){
+          const sel = configItems[selected];
+          if(sel === 'Borrar todo'){
+            if(window.confirm('¿Seguro que querés borrar música, videos y cola?')){
+              setSongs([]);
+              setVideos([]);
+              setQueue([]);
+              setCurrent(null);
+              setPlaying(false);
+              alert('Datos borrados');
+              setShowConfig(false);
+              setScreen('menu');
+              setSelected(0);
+            }
+          } else if(sel === 'Cerrar sesión'){
+            cerrarSesion();
+          } else if(sel === 'Volver'){
+            setShowConfig(false);
+            setScreen('menu');
+            setSelected(0);
+          }
+          return;
+        }
+
         if(screen === 'menu'){
           const sel = menuItems[selected];
           switch(sel){
@@ -267,10 +322,15 @@
               setScreen('camera');
               break;
             case 'Añadir música':
-              fileInputRef.current.accept = 'audio/*';
+              fileInputRef.current.accept = '.mp3,audio/*';
               fileInputRef.current.multiple = true;
               fileInputRef.current.onchange = e => {
-                const files = Array.from(e.target.files);
+                const files = Array.from(e.target.files).filter(f => f.name.toLowerCase().endsWith('.mp3'));
+                if(files.length === 0) {
+                  alert('Solo se permiten archivos .mp3 para música');
+                  e.target.value = '';
+                  return;
+                }
                 const newSongs = files.map(f => ({ title: f.name, url: URL.createObjectURL(f) }));
                 setSongs(s => [...s, ...newSongs]);
                 e.target.value = '';
@@ -279,10 +339,15 @@
               fileInputRef.current.click();
               break;
             case 'Añadir video':
-              fileInputRef.current.accept = 'video/*';
+              fileInputRef.current.accept = '.mp4,video/*';
               fileInputRef.current.multiple = true;
               fileInputRef.current.onchange = e => {
-                const files = Array.from(e.target.files);
+                const files = Array.from(e.target.files).filter(f => f.name.toLowerCase().endsWith('.mp4'));
+                if(files.length === 0) {
+                  alert('Solo se permiten archivos .mp4 para video');
+                  e.target.value = '';
+                  return;
+                }
                 const newVideos = files.map(f => ({ title: f.name, url: URL.createObjectURL(f) }));
                 setVideos(v => [...v, ...newVideos]);
                 e.target.value = '';
@@ -298,53 +363,26 @@
               setScreen('videos');
               setSelected(0);
               break;
-            case 'Borrar todo':
-              if(window.confirm('¿Seguro que quieres borrar toda la música, videos y cola?')){
-                setSongs([]);
-                setVideos([]);
-                setQueue([]);
-                setCurrent(null);
-                setPlaying(false);
-                alert('Datos borrados');
-              }
-              break;
-            case 'Cerrar sesión':
-              setLoggedIn(false);
-              setUsername('');
-              setPin('');
-              setScreen('menu');
+            case 'Configuración':
+              setShowConfig(true);
               setSelected(0);
-              setSongs([]);
-              setVideos([]);
-              setQueue([]);
-              setCurrent(null);
-              setPlaying(false);
-              document.body.classList.remove('scaled');
               break;
           }
         } else if(screen === 'queue'){
-          if(queue.length){
-            playItem(queue[selected]);
-          }
+          if(queue.length) playItem(queue[selected]);
         } else if(screen === 'localfiles'){
-          if(localFiles.length){
-            playLocalFile(localFiles[selected]);
-          }
+          if(localFiles.length) playLocalFile(localFiles[selected]);
         } else if(screen === 'songs'){
-          if(songs.length){
-            addToQueue(songs[selected]);
-          }
+          if(songs.length) addToQueue(songs[selected]);
         } else if(screen === 'videos'){
-          if(videos.length){
-            addToQueue(videos[selected]);
-          }
+          if(videos.length) addToQueue(videos[selected]);
         } else if(screen === 'camera'){
           setScreen('menu');
           setSelected(0);
         }
       };
 
-      // Add to queue and start playing if nothing playing
+      // Agregar a cola y reproducir si no hay nada sonando
       const addToQueue = (item) => {
         setQueue(q => [...q, item]);
         alert(`Agregado a la cola: ${item.title}`);
@@ -353,29 +391,29 @@
         }
       };
 
-      // Play item (song or video)
+      // Reproducir item (canción o video)
       const playItem = (item) => {
         setCurrent(item);
         setPlaying(true);
         setScreen('nowplaying');
       };
 
-      // Play local file
+      // Reproducir archivo local
       const playLocalFile = (file) => {
         const url = URL.createObjectURL(file);
         const item = { title: file.name, url, local: true };
         playItem(item);
       };
 
-      // Next in queue logic
+      // Siguiente en la cola
       const nextInQueue = () => {
-        if(queue.length === 0) {
+        if(queue.length === 0){
           setPlaying(false);
           setCurrent(null);
           return;
         }
         const index = queue.findIndex(i => i === current);
-        if(index === -1 || index === queue.length -1){
+        if(index === -1 || index === queue.length - 1){
           setPlaying(false);
           setCurrent(null);
         } else {
@@ -383,50 +421,81 @@
         }
       };
 
-      // Toggle play/pause
+      // Play/Pause toggle
       const togglePlay = () => {
-        if (current) {
-          if(playing) audioRef.current.pause();
-          else audioRef.current.play();
-          setPlaying(!playing);
+        if(!current) return;
+        if(playing){
+          if(current.url.endsWith('.mp4') && videoRef.current) videoRef.current.pause();
+          else if(audioRef.current) audioRef.current.pause();
+          setPlaying(false);
+        } else {
+          if(current.url.endsWith('.mp4') && videoRef.current) videoRef.current.play();
+          else if(audioRef.current) audioRef.current.play();
+          setPlaying(true);
         }
       };
 
-      const volUp = () => setVolume(v => Math.min(1, v + 0.1));
-      const volDown = () => setVolume(v => Math.max(0, v - 0.1));
+      // Volumen arriba y abajo
+      const volUp = () => setVolume(v => Math.min(1,v+0.1));
+      const volDown = () => setVolume(v => Math.max(0,v-0.1));
 
-      // Wheel rotation detection (already given, added selectItem on center click)
-      const wheelRef = useRef(null); 
-      let lastA = null;
+      // Mejora rueda clickwheel: control más suave y menos sensibilidad
+      let lastAngle = null;
+      let accumulatedRotation = 0;
+      const sensitivity = 15; // grados para activar cambio
+
       const startRotate = (e) => {
-        e.preventDefault(); lastA = null; vibrate();
-        window.addEventListener('mousemove', rot);
-        window.addEventListener('touchmove', t => { t.preventDefault(); rot({ clientX: t.touches[0].clientX, clientY: t.touches[0].clientY }); }, { passive: false });
-        window.addEventListener('mouseup', stop);
-        window.addEventListener('touchend', stop);
+        e.preventDefault();
+        lastAngle = null;
+        accumulatedRotation = 0;
+        vibrate();
+        window.addEventListener('mousemove', rotate);
+        window.addEventListener('touchmove', touchRotate, { passive: false });
+        window.addEventListener('mouseup', stopRotate);
+        window.addEventListener('touchend', stopRotate);
       };
-      const stop = () => { 
-        window.removeEventListener('mousemove', rot); 
-        window.removeEventListener('touchmove', rot);
+      const stopRotate = () => {
+        window.removeEventListener('mousemove', rotate);
+        window.removeEventListener('touchmove', touchRotate);
+        window.removeEventListener('mouseup', stopRotate);
+        window.removeEventListener('touchend', stopRotate);
       };
-      const rot = (e) => {
-        const r = wheelRef.current.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2,
-              dx = e.clientX - cx, dy = e.clientY - cy, a = Math.atan2(dy, dx) * (180 / Math.PI);
-        if (lastA !== null) {
-          let d = a - lastA; if (d > 180) d -= 360; if (d < -180) d += 360;
-          if (Math.abs(d) > 10) { d > 0 ? nextItem() : prevItem(); vibrate(); }
-        } 
-        lastA = a;
+      const rotate = (e) => {
+        const rect = wheelRef.current.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dx = e.clientX - cx;
+        const dy = e.clientY - cy;
+        const angle = Math.atan2(dy, dx) * (180/Math.PI);
+        if(lastAngle !== null){
+          let diff = angle - lastAngle;
+          if(diff > 180) diff -= 360;
+          if(diff < -180) diff += 360;
+          accumulatedRotation += diff;
+          if(Math.abs(accumulatedRotation) > sensitivity){
+            if(accumulatedRotation > 0) nextItem();
+            else prevItem();
+            accumulatedRotation = 0;
+            vibrate();
+          }
+        }
+        lastAngle = angle;
+      };
+      const touchRotate = (e) => {
+        e.preventDefault();
+        rotate({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
       };
 
-      // Camera retro logic
+      // Cámara retro
       const [stream, setStream] = useState(null);
       useEffect(() => {
         if(screen === 'camera'){
-          navigator.mediaDevices.getUserMedia({ video: true }).then(s => {
+          navigator.mediaDevices.getUserMedia({ video:true }).then(s => {
             setStream(s);
-            if(videoRef.current) videoRef.current.srcObject = s;
-            if(videoRef.current) videoRef.current.play();
+            if(videoRef.current){
+              videoRef.current.srcObject = s;
+              videoRef.current.play();
+            }
           }).catch(() => alert('No se pudo acceder a la cámara'));
         } else {
           if(stream){
@@ -436,67 +505,100 @@
         }
       }, [screen]);
 
-      // Render screen content depending on current screen
+      // Cerrar sesión helper
+      const cerrarSesion = () => {
+        setLoggedIn(false);
+        setUsername('');
+        setPin('');
+        setScreen('menu');
+        setSelected(0);
+        setSongs([]);
+        setVideos([]);
+        setQueue([]);
+        setCurrent(null);
+        setPlaying(false);
+        setShowConfig(false);
+        document.body.classList.remove('scaled');
+      };
+
+      // Renderizado de pantalla según pantalla actual
       const renderScreen = () => {
-        if(screen === 'menu'){
+        if(showConfig){
           return (
             <div className="list-container">
-              {menuItems.map((item,i) => (
-                <div key={i} className={`screen-item ${i===selected ? 'selected' : ''}`}>
+              {configItems.map((item,i) => (
+                <div key={i} className={`screen-item ${i === selected ? 'selected' : ''}`}>
                   {item}
                 </div>
               ))}
             </div>
           );
-        } else if(screen === 'queue'){
+        }
+        if(screen === 'menu'){
+          return (
+            <div className="list-container">
+              {menuItems.map((item,i) => (
+                <div key={i} className={`screen-item ${i === selected ? 'selected' : ''}`}>
+                  {item}
+                </div>
+              ))}
+            </div>
+          );
+        }
+        if(screen === 'queue'){
           if(queue.length === 0) return <div style={{textAlign:'center'}}>Cola vacía</div>;
           return (
             <div className="list-container">
               {queue.map((item,i) => (
-                <div key={i} className={`screen-item ${i===selected ? 'selected' : ''}`}>
+                <div key={i} className={`screen-item ${i === selected ? 'selected' : ''}`}>
                   {item.title}
                 </div>
               ))}
             </div>
           );
-        } else if(screen === 'localfiles'){
+        }
+        if(screen === 'localfiles'){
           if(localFiles.length === 0) return <div style={{textAlign:'center'}}>No hay archivos locales</div>;
           return (
             <div className="list-container">
               {localFiles.map((file,i) => (
-                <div key={i} className={`screen-item ${i===selected ? 'selected' : ''}`}>
+                <div key={i} className={`screen-item ${i === selected ? 'selected' : ''}`}>
                   {file.name}
                 </div>
               ))}
             </div>
           );
-        } else if(screen === 'songs'){
+        }
+        if(screen === 'songs'){
           if(songs.length === 0) return <div style={{textAlign:'center'}}>No hay música</div>;
           return (
             <div className="list-container">
               {songs.map((song,i) => (
-                <div key={i} className={`screen-item ${i===selected ? 'selected' : ''}`}>
+                <div key={i} className={`screen-item ${i === selected ? 'selected' : ''}`}>
                   {song.title}
                 </div>
               ))}
             </div>
           );
-        } else if(screen === 'videos'){
+        }
+        if(screen === 'videos'){
           if(videos.length === 0) return <div style={{textAlign:'center'}}>No hay videos</div>;
           return (
             <div className="list-container">
               {videos.map((vid,i) => (
-                <div key={i} className={`screen-item ${i===selected ? 'selected' : ''}`}>
+                <div key={i} className={`screen-item ${i === selected ? 'selected' : ''}`}>
                   {vid.title}
                 </div>
               ))}
             </div>
           );
-        } else if(screen === 'nowplaying'){
+        }
+        if(screen === 'nowplaying'){
           if(!current) return <div>No hay reproducción</div>;
           if(current.url && current.url.endsWith('.mp4')){
             return (
               <video
+                ref={videoRef}
                 src={current.url}
                 controls
                 autoPlay={playing}
@@ -517,99 +619,95 @@
               />
             </>
           );
-        } else if(screen === 'camera'){
+        }
+        if(screen === 'camera'){
           return (
             <>
               <video ref={videoRef} className="retro-video" autoPlay muted playsInline></video>
-              <button onClick={() => {
-                // Take photo (canvas)
-                if(videoRef.current){
-                  const video = videoRef.current;
-                  const canvas = document.createElement('canvas');
-                  canvas.width = video.videoWidth;
-                  canvas.height = video.videoHeight;
-                  const ctx = canvas.getContext('2d');
-                  ctx.filter = 'grayscale(70%) contrast(120%) brightness(90%) sepia(0.3) saturate(0.8)';
-                  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                  canvas.toBlob(blob => {
-                    const url = URL.createObjectURL(blob);
-                    alert('Foto tomada (retro) - no se guarda automáticamente');
-                    // Opcional: abrir en nueva ventana o descargar
-                    window.open(url);
-                  }, 'image/png');
-                }
-              }} style={{marginTop:'8px', fontSize:'12px', padding:'4px'}}>Tomar foto retro</button>
+              <button
+                onClick={() => {
+                  if(videoRef.current){
+                    const video = videoRef.current;
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    const ctx = canvas.getContext('2d');
+                    ctx.filter = 'grayscale(70%) contrast(120%) brightness(90%) sepia(0.3) saturate(0.8)';
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    canvas.toBlob(blob => {
+                      const url = URL.createObjectURL(blob);
+                      alert('Foto tomada (retro) - no se guarda automáticamente');
+                      window.open(url);
+                    }, 'image/png');
+                  }
+                }}
+                style={{marginTop:'8px', fontSize:'12px', padding:'4px'}}
+              >
+                Tomar foto retro
+              </button>
             </>
           );
         }
         return <div>Sin contenido</div>;
       };
 
-      // Render login or main UI
-      if (!loggedIn) return (
-        <div style={{padding:'20px'}}>
-          Usuario:<br/>
-          <input value={username} onChange={e => setUsername(e.target.value)} /><br/>
-          PIN:<br/>
-          <input
-            maxLength="4"
-            pattern="\d*"
-            inputMode="numeric"
-            value={pin}
-            onChange={e => setPin(e.target.value.replace(/\D/g, ''))}
-          /><br/>
-          <button onClick={handleLogin}>Entrar</button>
-        </div>
-      );
+      // Render login o app principal
+      if(!loggedIn){
+        return (
+          <div style={{padding:'20px'}}>
+            Usuario:<br/>
+            <input value={username} onChange={e => setUsername(e.target.value)} /><br/>
+            PIN:<br/>
+            <input
+              maxLength="4"
+              pattern="\d*"
+              inputMode="numeric"
+              value={pin}
+              onChange={e => setPin(e.target.value.replace(/\D/g, ''))}
+            /><br/>
+            <button onClick={handleLogin}>Entrar</button>
+          </div>
+        );
+      }
 
       return (
-        <div className="ipod-shell">
-          <div className="ipod-screen">
-            <div className="status-bar">Bat: {battery} | {audioOut}</div>
+        <div className="ipod-shell" role="main" aria-label="iPod Classic PRO MAX">
+          <div className="ipod-screen" aria-live="polite" aria-atomic="true">
+            <div className="status-bar">
+              <div>⚡ {battery}</div>
+              <div>{audioOut}</div>
+            </div>
             {renderScreen()}
-            <div className="progress-bar"><div className="progress" style={{ width: `${progress * 100}%` }}></div></div>
+            <div className="progress-bar">
+              <div className="progress" style={{width: `${progress * 100}%`}}></div>
+            </div>
           </div>
-
-          {/* Hidden file input to load music/videos */}
-          <input
-            ref={fileInputRef}
-            type="file"
-            style={{ display: 'none' }}
-            onChange={() => {}}
-          />
-
           <div
             className="clickwheel"
             ref={wheelRef}
             onMouseDown={startRotate}
             onTouchStart={startRotate}
+            role="slider"
+            aria-valuemin="0"
+            aria-valuemax={showConfig ? configItems.length -1 : menuItems.length - 1}
+            aria-valuenow={selected}
+            aria-label="Rueda de navegación"
           >
-            <div className="btn menu" onClick={() => { setScreen('menu'); setSelected(0); vibrate(); }}>MENU</div>
-            <div className="btn back" onClick={() => {
-              if(audioRef.current){
-                audioRef.current.currentTime = 0;
-                vibrate();
-              }
-            }}>{'<<'}</div>
-            <div className="btn forward" onClick={() => {
-              if(audioRef.current){
-                audioRef.current.currentTime = audioRef.current.duration;
-                vibrate();
-              }
-            }}>{'>>'}</div>
-            <div className="btn play" onClick={togglePlay}>Play</div>
+            <div className="btn menu" onClick={() => { vibrate(); setScreen('menu'); setShowConfig(false); setSelected(0); }}>MENU</div>
+            <div className="btn back" onClick={() => { vibrate(); prevItem(); }}>‹</div>
+            <div className="btn forward" onClick={() => { vibrate(); nextItem(); }}>›</div>
+            <div className="btn play" onClick={() => { vibrate(); togglePlay(); }}>
+              {playing ? '❚❚' : '▶'}
+            </div>
             <div className="center-button" onClick={selectItem}></div>
           </div>
-
-          <div className="volume-btn volume-up" onClick={() => { volUp(); vibrate(); }}></div>
-          <div className="volume-btn volume-down" onClick={() => { volDown(); vibrate(); }}></div>
-
-          {current && playing && (
-            <div className="now-playing-bar">
-              {current.title}<br/>
-              <div className="equalizer"><div></div><div></div><div></div></div>
-            </div>
-          )}
+          <div className="volume-btn volume-up" onClick={() => { vibrate(); volUp(); }} aria-label="Subir volumen"></div>
+          <div className="volume-btn volume-down" onClick={() => { vibrate(); volDown(); }} aria-label="Bajar volumen"></div>
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+          />
         </div>
       );
     }
