@@ -5,36 +5,29 @@
   <title>iPod Classic PRO MAX</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    html, body { margin: 0; height: 100%; overflow: hidden; touch-action: none; }
-    body { background: #cfd4d8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      display: flex; justify-content: center; align-items: center; transition: transform 0.5s ease; }
-    body.scaled { transform: scale(0.85); }
-    .ipod-shell { width: 300px; height: 540px; background: linear-gradient(to bottom, #ddd, #aaa);
-      border-radius: 40px; box-shadow: inset 0 0 10px rgba(0,0,0,0.4), 0 10px 30px rgba(0,0,0,0.4);
-      display: flex; flex-direction: column; align-items: center; padding: 20px; position: relative; }
-    .ipod-screen { width: 240px; height: 220px; background: radial-gradient(circle at 30% 30%, #e0f1f5 0%, #b3cbd4 100%);
-      border: 4px solid #333; border-radius: 14px; box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
-      position: relative; padding: 10px; overflow: hidden; font-size: 12px; }
-    .ipod-screen.off { background: #000; color: #fff; display: flex; justify-content: center; align-items: center; }
-    .status-bar { display: flex; justify-content: space-between; font-size: 10px; color: #333; margin-bottom: 6px; }
-    .screen-item { padding: 4px; border-radius: 4px; }
-    .screen-item.selected { background: #007aff; color: #fff; }
-    .clickwheel { width: 180px; height: 180px; background: radial-gradient(circle at center, #ddd 0%, #999 90%);
-      border-radius: 50%; margin-top: auto; position: relative; box-shadow: inset 0 0 25px rgba(0,0,0,0.4); touch-action: none; }
-    .clickwheel::before { content: ''; position: absolute; inset: 0; border-radius: 50%;
-      background: radial-gradient(circle at center, rgba(255,255,255,0.2) 0%, transparent 70%); }
-    .clickwheel .btn { position: absolute; font-size: 10px; font-weight: bold; color: #333; }
-    .btn.menu { top: 12px; left: 50%; transform: translateX(-50%); }
-    .btn.play { bottom: 12px; left: 50%; transform: translateX(-50%); }
-    .center-button { width: 60px; height: 60px; border-radius: 50%; background: #555; position: absolute;
-      top: 50%; left: 50%; transform: translate(-50%, -50%); cursor: pointer; box-shadow: inset 0 0 8px rgba(0,0,0,0.3); }
-    .volume-btn { position: absolute; width: 20px; height: 40px; background: #666; border-radius: 10px; opacity: 0.7;
-      cursor: pointer; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
-    .volume-up { left: -15px; top: 160px; }   /* sobresale a la izquierda */
-    .volume-down { left: -15px; top: 210px; }
-    .list-container { height: 160px; overflow-y: auto; }
-    .progress-bar { height: 3px; background: #333; width: 100%; margin-top: 4px; }
-    .progress { height: 100%; background: #007aff; }
+    html, body { margin:0; height:100%; overflow:hidden; touch-action:none; }
+    body { background:#cfd4d8; font-family:Arial,sans-serif; display:flex; justify-content:center; align-items:center; transition:transform 0.5s ease; }
+    body.scaled { transform:scale(0.85); }
+    .ipod-shell { width:300px; height:540px; background:linear-gradient(to bottom,#ddd,#aaa); border-radius:40px; box-shadow:inset 0 0 10px rgba(0,0,0,0.4),0 10px 30px rgba(0,0,0,0.4); display:flex; flex-direction:column; align-items:center; padding:20px; position:relative; }
+    .ipod-screen { width:240px; height:220px; background:radial-gradient(circle at 30% 30%,#e0f1f5 0%,#b3cbd4 100%); border:4px solid #333; border-radius:14px; box-shadow:inset 0 0 15px rgba(0,0,0,0.3); position:relative; padding:10px; overflow:hidden; font-size:12px; }
+    .ipod-screen.off { background:#000; color:#fff; display:flex; justify-content:center; align-items:center; }
+    .status-bar { display:flex; justify-content:space-between; font-size:10px; color:#333; margin-bottom:6px; }
+    .list-container { height:160px; overflow-y:auto; }
+    .screen-item { padding:4px; border-radius:4px; }
+    .screen-item.selected { background:#007aff; color:#fff; }
+    .clickwheel { width:180px; height:180px; background:radial-gradient(circle at center,#ddd 0%,#999 90%); border-radius:50%; margin-top:auto; position:relative; box-shadow:inset 0 0 25px rgba(0,0,0,0.4); }
+    .clickwheel::before { content:''; position:absolute; inset:0; border-radius:50%; background:radial-gradient(circle at center,rgba(255,255,255,0.2) 0%,transparent 70%); }
+    .clickwheel .btn { position:absolute; font-size:12px; font-weight:bold; color:#333; user-select:none; }
+    .btn.menu { top:12px; left:50%; transform:translateX(-50%); }
+    .btn.back { left:10px; top:50%; transform:translateY(-50%); }
+    .btn.forward { right:10px; top:50%; transform:translateY(-50%); }
+    .btn.play { bottom:12px; left:50%; transform:translateX(-50%); }
+    .center-button { width:60px; height:60px; border-radius:50%; background:#555; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); cursor:pointer; box-shadow:inset 0 0 8px rgba(0,0,0,0.3); }
+    .volume-btn { position:absolute; width:20px; height:40px; background:#666; border-radius:10px; opacity:0.7; cursor:pointer; box-shadow:0 0 5px rgba(0,0,0,0.5); }
+    .volume-up { left:-15px; top:160px; }  /* sobresale */
+    .volume-down { left:-15px; top:210px; }
+    .progress-bar { height:3px; background:#333; width:100%; margin-top:4px; }
+    .progress { height:100%; background:#007aff; }
   </style>
 </head>
 <body>
@@ -63,10 +56,9 @@
       const [screenOff, setScreenOff] = useState(false);
 
       const audioRef = useRef(null);
-      const videoRef = useRef(null);
       const wheelRef = useRef(null);
-      const fileInputRef = useRef(null);
       const listRef = useRef(null);
+      const fileInputRef = useRef(null);
 
       const userKey = `${username}_${pin}`;
 
@@ -74,25 +66,21 @@
         if (loggedIn && 'getBattery' in navigator) {
           navigator.getBattery().then(bat => {
             setBattery(Math.round(bat.level * 100) + '%');
-            bat.addEventListener('levelchange', () => {
-              setBattery(Math.round(bat.level * 100) + '%');
-            });
+            bat.addEventListener('levelchange', () => setBattery(Math.round(bat.level * 100) + '%'));
           });
         }
         if (loggedIn && navigator.mediaDevices?.enumerateDevices) {
-          navigator.mediaDevices.enumerateDevices().then(devices => {
-            const audioOuts = devices.filter(d => d.kind === 'audiooutput');
-            setAudioOut(audioOuts.length > 0 ? 'Audífonos' : 'Altavoz');
+          navigator.mediaDevices.enumerateDevices().then(devs => {
+            const outs = devs.filter(d => d.kind === 'audiooutput');
+            setAudioOut(outs.length ? 'Audífonos' : 'Altavoz');
           });
         }
       }, [loggedIn]);
 
       useEffect(() => {
         if (loggedIn) {
-          const s = localStorage.getItem(`${userKey}_songs`);
-          const v = localStorage.getItem(`${userKey}_videos`);
-          setSongs(s ? JSON.parse(s) : []);
-          setVideos(v ? JSON.parse(v) : []);
+          setSongs(JSON.parse(localStorage.getItem(`${userKey}_songs`)) || []);
+          setVideos(JSON.parse(localStorage.getItem(`${userKey}_videos`)) || []);
           document.body.classList.add('scaled');
         }
       }, [loggedIn]);
@@ -101,20 +89,18 @@
         const ref = audioRef.current;
         if (ref) {
           ref.volume = volume;
-          ref.ontimeupdate = () => {
-            setProgress(ref.duration ? ref.currentTime / ref.duration : 0);
-          };
+          ref.ontimeupdate = () => setProgress(ref.duration ? ref.currentTime / ref.duration : 0);
         }
       }, [current, volume]);
 
-      const vibrate = () => { if (navigator.vibrate) navigator.vibrate(30); };
+      const vibrate = () => navigator.vibrate?.(20);
       const saveData = () => {
         localStorage.setItem(`${userKey}_songs`, JSON.stringify(songs));
         localStorage.setItem(`${userKey}_videos`, JSON.stringify(videos));
       };
 
       const handleLogin = () => {
-        if (username.trim() === '' || !/^\d{4}$/.test(pin)) { alert('Usuario y PIN de 4 dígitos'); return; }
+        if (!username.trim() || !/^\d{4}$/.test(pin)) return alert('Usuario y PIN de 4 dígitos');
         setLoggedIn(true); setScreen('menu'); setSelected(0);
       };
 
@@ -123,38 +109,30 @@
 
       const handleWheel = (delta) => {
         vibrate();
-        const max = 7; // total items in menu
+        const max = 7;
         setSelected(s => {
-          let n = s + delta;
-          if (n < 0) n = max - 1;
-          if (n >= max) n = 0;
+          let n = s + delta; if (n < 0) n = max - 1; if (n >= max) n = 0;
           return n;
         });
-        if (listRef.current) listRef.current.scrollTop = selected * 20;
+        listRef.current.scrollTop = selected * 20;
       };
 
       const startRotate = (e) => {
-        e.preventDefault();
-        let lastA = null;
-        const rot = (evt) => {
+        e.preventDefault(); let lastA = null;
+        const rot = evt => {
           const { clientX, clientY } = evt.touches ? evt.touches[0] : evt;
           const r = wheelRef.current.getBoundingClientRect();
           const cx = r.left + r.width/2, cy = r.top + r.height/2;
           const dx = clientX - cx, dy = clientY - cy;
           const a = Math.atan2(dy, dx) * (180/Math.PI);
           if (lastA !== null) {
-            let d = a - lastA;
-            if (d > 180) d -= 360; if (d < -180) d += 360;
-            if (Math.abs(d) > 5) { handleWheel(d > 0 ? 1 : -1); lastA = a; }
+            let d = a - lastA; if (d > 180) d -= 360; if (d < -180) d += 360;
+            if (Math.abs(d) > 15) { handleWheel(d > 0 ? 1 : -1); lastA = a; }
           } else lastA = a;
         };
-        const stop = () => {
-          window.removeEventListener('mousemove', rot); window.removeEventListener('mouseup', stop);
-          window.removeEventListener('touchmove', rot); window.removeEventListener('touchend', stop);
-        };
+        const stop = () => window.removeEventListener('mousemove', rot);
         window.addEventListener('mousemove', rot); window.addEventListener('mouseup', stop);
-        window.addEventListener('touchmove', rot, { passive: false });
-        window.addEventListener('touchend', stop);
+        window.addEventListener('touchmove', rot, { passive:false }); window.addEventListener('touchend', stop);
       };
 
       const menuItems = ['Ver Cola', 'Añadir Música', 'Añadir Video', 'Biblioteca Música', 'Biblioteca Videos', 'Cámara Retro', 'Configuración'];
@@ -162,9 +140,9 @@
       const selectItem = () => {
         vibrate();
         const item = menuItems[selected];
-        if (item === 'Añadir Música') { fileInputRef.current.accept = 'audio/*'; fileInputRef.current.click(); }
-        else if (item === 'Añadir Video') { fileInputRef.current.accept = 'video/*'; fileInputRef.current.click(); }
-        else if (item === 'Configuración') { setScreenOff(true); }
+        if (item === 'Añadir Música') { fileInputRef.current.accept = 'audio/mp3,audio/*'; fileInputRef.current.click(); }
+        else if (item === 'Añadir Video') { fileInputRef.current.accept = 'video/mp4,video/webm'; fileInputRef.current.click(); }
+        else if (item === 'Configuración') { setScreenOff(!screenOff); }
       };
 
       return !loggedIn ? (
@@ -188,8 +166,10 @@
           </div>
           <input type="file" ref={fileInputRef} style={{display:'none'}} multiple />
           <div className="clickwheel" ref={wheelRef} onMouseDown={startRotate} onTouchStart={startRotate}>
-            <div className="btn menu" onClick={()=>{setScreen('menu'); setSelected(0); vibrate();}}>MENU</div>
-            <div className="btn play" onClick={()=>{vibrate();}}>Play</div>
+            <div className="btn menu">MENU</div>
+            <div className="btn back">«</div>
+            <div className="btn forward">»</div>
+            <div className="btn play">▶️</div>
             <div className="center-button" onClick={selectItem}></div>
           </div>
           <div className="volume-btn volume-up" onClick={volUp}></div>
