@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>iPod Classic Clon (React)</title>
+  <title>iPod Classic Modern Clone</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- React + Babel CDN -->
   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -11,19 +11,19 @@
   <style>
     body {
       margin: 0;
-      background: #aaa;
+      background: linear-gradient(to bottom, #dfe3e6, #b3b7bb);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      font-family: 'Courier New', monospace;
     }
     .ipod-shell {
-      width: 280px;
-      height: 450px;
-      background: linear-gradient(to bottom, #ddd, #999);
+      width: 300px;
+      height: 520px;
+      background: #f8f8f8;
       border-radius: 40px;
-      box-shadow: inset 0 0 10px #0006, 0 10px 30px #0006;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.4), inset 0 0 8px rgba(0,0,0,0.2);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -31,61 +31,73 @@
       position: relative;
     }
     .ipod-screen {
-      width: 220px;
-      height: 160px;
-      background: #b0c4c8;
-      border: 4px solid #333;
-      border-radius: 12px;
-      box-shadow: inset 0 0 8px #0005;
-      color: #000;
-      font-size: 12px;
-      padding: 8px;
-      font-family: 'Courier New', monospace;
+      width: 240px;
+      height: 180px;
+      background: #e0e0e0;
+      border: 2px solid #333;
+      border-radius: 14px;
+      box-shadow: inset 0 0 12px rgba(0,0,0,0.2);
+      overflow: hidden;
       position: relative;
+      padding: 10px;
     }
-    .ipod-screen::before {
-      content: '';
+    .battery {
       position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(0deg, transparent 0 1px, #0002 1px 2px);
-      border-radius: 12px;
-      pointer-events: none;
-    }
-    .screen-item {
-      padding: 2px 4px;
-    }
-    .selected {
-      background: #000;
-      color: #0f0;
-    }
-    #battery {
-      position: absolute;
-      top: 8px;
+      top: 6px;
       right: 12px;
       font-size: 10px;
-      color: #000;
+      color: #333;
+    }
+    .screen-content {
+      margin-top: 18px;
+      font-size: 14px;
+    }
+    .screen-item {
+      padding: 4px;
+      border-radius: 4px;
+    }
+    .selected {
+      background: #007aff;
+      color: #fff;
+    }
+    .now-playing {
+      text-align: center;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: #ccc;
+      margin-top: 8px;
+      border-radius: 2px;
+    }
+    .progress {
+      height: 100%;
+      background: #007aff;
+      width: 0%;
+      border-radius: 2px;
     }
     .clickwheel {
-      width: 180px;
-      height: 180px;
-      background: radial-gradient(circle at center, #444 0%, #111 80%);
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle at center, #ddd 0%, #999 90%);
       border-radius: 50%;
       margin-top: auto;
       position: relative;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
     }
     .clickwheel .btn {
       position: absolute;
-      color: white;
       font-size: 10px;
       font-weight: bold;
+      color: #333;
     }
-    .btn.menu { top: 10px; left: 50%; transform: translateX(-50%); }
+    .btn.menu { top: 12px; left: 50%; transform: translateX(-50%); }
     .btn.back { left: 10px; top: 50%; transform: translateY(-50%); }
     .btn.forward { right: 10px; top: 50%; transform: translateY(-50%); }
-    .btn.play { bottom: 10px; left: 50%; transform: translateX(-50%); }
+    .btn.play { bottom: 12px; left: 50%; transform: translateX(-50%); }
     .center-button {
       width: 60px; height: 60px;
-      border-radius: 50%; background: #333;
+      border-radius: 50%; background: #555;
       position: absolute; top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       cursor: pointer;
@@ -98,9 +110,7 @@
 </head>
 <body>
   <div id="root"></div>
-
   <script type="text/babel">
-
     const { useState, useEffect, useRef } = React;
 
     function App() {
@@ -110,10 +120,13 @@
       const [screen, setScreen] = useState('menu');
       const [selected, setSelected] = useState(0);
       const [songs, setSongs] = useState([]);
+      const [current, setCurrent] = useState(null);
+      const [playing, setPlaying] = useState(false);
+      const audioRef = useRef(null);
       const ytTitleRef = useRef(null);
       const ytUrlRef = useRef(null);
+      const [progress, setProgress] = useState(0);
 
-      // Load battery status
       useEffect(() => {
         if (loggedIn && 'getBattery' in navigator) {
           navigator.getBattery().then(bat => {
@@ -125,13 +138,21 @@
         }
       }, [loggedIn]);
 
-      // Load songs from storage
       useEffect(() => {
         if (pin) {
           const data = localStorage.getItem(pin);
           setSongs(data ? JSON.parse(data) : []);
         }
       }, [pin]);
+
+      useEffect(() => {
+        if (audioRef.current) {
+          audioRef.current.ontimeupdate = () => {
+            setProgress(audioRef.current.duration ? audioRef.current.currentTime / audioRef.current.duration : 0);
+          };
+          audioRef.current.onended = nextSong;
+        }
+      }, [current]);
 
       function saveSongs(newSongs) {
         localStorage.setItem(pin, JSON.stringify(newSongs));
@@ -164,10 +185,20 @@
             <>
               Título:<br/>
               <input ref={ytTitleRef}/><br/>
-              URL:<br/>
+              URL MP3:<br/>
               <input ref={ytUrlRef}/><br/>
               <button onClick={addSong}>Guardar</button>
             </>
+          );
+        }
+        if (screen === 'nowplaying') {
+          if (!current) return <div>No hay canción seleccionada.</div>;
+          return (
+            <div className="now-playing">
+              <div><strong>{current.title}</strong></div>
+              <div style={{fontSize: '10px', margin: '4px 0'}}>{playing ? '▶ Reproduciendo' : '❙❙ Pausado'}</div>
+              <div className="progress-bar"><div className="progress" style={{width: `${progress*100}%`}}></div></div>
+            </div>
           );
         }
       }
@@ -193,22 +224,51 @@
           setSelected(0);
         } else if (screen === 'library') {
           const song = songs[selected];
-          if (song) window.open(song.url);
+          if (song) {
+            setCurrent(song);
+            audioRef.current.src = song.url;
+            audioRef.current.play();
+            setPlaying(true);
+            setScreen('nowplaying');
+          }
         }
       }
 
-      function prevItem() {
-        setSelected(s => Math.max(0,s-1));
-      }
+      function prevItem() { setSelected(s => Math.max(0,s-1)); }
       function nextItem() {
         const max = screen==='menu'?1: songs.length-1;
         setSelected(s => Math.min(max,s+1));
       }
 
-      // ClickWheel rotation
+      function togglePlay() {
+        if (!current) return;
+        if (playing) { audioRef.current.pause(); setPlaying(false); }
+        else { audioRef.current.play(); setPlaying(true); }
+      }
+
+      function nextSong() {
+        if (!current) return;
+        const idx = songs.findIndex(s=>s.title===current.title);
+        if (idx < songs.length-1) {
+          setCurrent(songs[idx+1]);
+          audioRef.current.src = songs[idx+1].url;
+          audioRef.current.play();
+        }
+      }
+
+      function prevSong() {
+        if (!current) return;
+        const idx = songs.findIndex(s=>s.title===current.title);
+        if (idx > 0) {
+          setCurrent(songs[idx-1]);
+          audioRef.current.src = songs[idx-1].url;
+          audioRef.current.play();
+        }
+      }
+
+      // ClickWheel
       const wheelRef = useRef(null);
       let lastAngle = null;
-
       function startRotate(e) {
         e.preventDefault();
         lastAngle = null;
@@ -236,7 +296,7 @@
           let diff = angle - lastAngle;
           if (diff>180) diff-=360;
           if (diff<-180) diff+=360;
-          if (Math.abs(diff)>15) {
+          if (Math.abs(diff)>10) {
             if (diff>0) nextItem();
             else prevItem();
           }
@@ -246,27 +306,30 @@
 
       if (!loggedIn) {
         return (
-          <div id="login-screen">
-            <label>PIN:</label>
+          <div>
+            PIN:<br/>
             <input type="password" maxLength="4" value={pin} onChange={e=>setPin(e.target.value)}/>
-            <button onClick={handleLogin}>Entrar</button>
+            <br/><button onClick={handleLogin}>Entrar</button>
           </div>
-        )
+        );
       }
 
       return (
         <div className="ipod-shell">
-          <div id="battery">Bat: {battery}</div>
+          <div className="battery">{battery}</div>
           <div className="ipod-screen">{renderScreen()}</div>
           <div className="clickwheel" ref={wheelRef}
             onMouseDown={startRotate} onTouchStart={startRotate}>
-            <div className="btn menu" onClick={()=>{setScreen('menu'); setSelected(0)}}>MENU</div>
+            <div className="btn menu" onClick={()=>{setScreen('menu'); setSelected(0);}}>MENU</div>
+            <div className="btn back" onClick={prevSong}>◁◁</div>
+            <div className="btn forward" onClick={nextSong}>▷▷</div>
+            <div className="btn play" onClick={togglePlay}>▶❙❙</div>
             <div className="center-button" onClick={selectItem}></div>
           </div>
+          <audio ref={audioRef}></audio>
         </div>
       );
     }
-
     ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
 </body>
