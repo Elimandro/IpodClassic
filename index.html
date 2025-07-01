@@ -2,79 +2,76 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>iPod Classic Clon</title>
+  <title>iPod Classic Clon (React)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- React + Babel CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
     body {
       margin: 0;
-      background: linear-gradient(to bottom, #bfc4c9, #a9aeb5);
-      font-family: 'Courier New', monospace;
+      background: #aaa;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-    }
-    #login-screen {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      background: #222;
-      padding: 20px;
-      border-radius: 10px;
-      color: #0f0;
       font-family: 'Courier New', monospace;
-      font-size: 20px;
-    }
-    #login-screen input {
-      font-size: 20px;
-      text-align: center;
-    }
-    #login-screen button {
-      font-size: 18px;
-      cursor: pointer;
     }
     .ipod-shell {
-      width: 260px;
-      height: 430px;
-      background: linear-gradient(to bottom, #ccc, #aaa);
+      width: 280px;
+      height: 450px;
+      background: linear-gradient(to bottom, #ddd, #999);
       border-radius: 40px;
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.3), 0 10px 30px rgba(0,0,0,0.4);
-      padding: 16px;
+      box-shadow: inset 0 0 10px #0006, 0 10px 30px #0006;
       display: flex;
       flex-direction: column;
       align-items: center;
+      padding: 20px;
       position: relative;
     }
     .ipod-screen {
-      width: 200px;
-      height: 150px;
-      background: #111;
+      width: 220px;
+      height: 160px;
+      background: #b0c4c8;
+      border: 4px solid #333;
       border-radius: 12px;
-      box-shadow: inset 0 0 8px rgba(0,255,0,0.3);
-      color: #0f0;
+      box-shadow: inset 0 0 8px #0005;
+      color: #000;
       font-size: 12px;
       padding: 8px;
-      margin-top: 16px;
-      overflow-y: auto;
       font-family: 'Courier New', monospace;
+      position: relative;
+    }
+    .ipod-screen::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, transparent 0 1px, #0002 1px 2px);
+      border-radius: 12px;
+      pointer-events: none;
+    }
+    .screen-item {
+      padding: 2px 4px;
+    }
+    .selected {
+      background: #000;
+      color: #0f0;
     }
     #battery {
       position: absolute;
-      top: 12px;
-      right: 20px;
+      top: 8px;
+      right: 12px;
       font-size: 10px;
-      color: #0f0;
-      font-family: 'Courier New', monospace;
+      color: #000;
     }
     .clickwheel {
       width: 180px;
       height: 180px;
-      background: radial-gradient(circle at center, #2c2c2c 0%, #000 70%);
+      background: radial-gradient(circle at center, #444 0%, #111 80%);
       border-radius: 50%;
       margin-top: auto;
-      box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
       position: relative;
-      cursor: pointer;
     }
     .clickwheel .btn {
       position: absolute;
@@ -91,227 +88,186 @@
       border-radius: 50%; background: #333;
       position: absolute; top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      box-shadow: inset 0 0 8px rgba(255,255,255,0.1);
       cursor: pointer;
     }
-    input[type="text"] {
-      width: 180px;
+    input, button {
+      margin: 4px 0;
       font-size: 12px;
-      margin: 5px 0;
-    }
-    button {
-      font-size: 12px;
-      cursor: pointer;
-      margin-top: 5px;
     }
   </style>
 </head>
 <body>
+  <div id="root"></div>
 
-  <!-- LOGIN SCREEN -->
-  <div id="login-screen">
-    <div>PIN:</div>
-    <input id="pin-input" type="password" maxlength="4" />
-    <button onclick="login()">Ingresar</button>
-  </div>
+  <script type="text/babel">
 
-  <!-- iPod -->
-  <div class="ipod-shell" style="display:none;">
-    <div id="battery">Bat: --%</div>
-    <div class="ipod-screen" id="screen"></div>
-    <div class="clickwheel">
-      <div class="btn menu" onclick="showMenu()">MENU</div>
-      <div class="btn back" onclick="prevItem()">◁◁</div>
-      <div class="btn forward" onclick="nextItem()">▷▷</div>
-      <div class="btn play" onclick="playSelected()">▶❙❙</div>
-      <div class="center-button" onclick="selectItem()"></div>
-    </div>
-  </div>
+    const { useState, useEffect, useRef } = React;
 
-<script>
-let currentPin = null;
-let userSongs = [];
-let currentScreen = 'menu';
-let selectedIndex = 0;
-const screen = document.getElementById('screen');
+    function App() {
+      const [pin, setPin] = useState('');
+      const [loggedIn, setLoggedIn] = useState(false);
+      const [battery, setBattery] = useState('--%');
+      const [screen, setScreen] = useState('menu');
+      const [selected, setSelected] = useState(0);
+      const [songs, setSongs] = useState([]);
+      const ytTitleRef = useRef(null);
+      const ytUrlRef = useRef(null);
 
-function login() {
-  const pin = document.getElementById('pin-input').value.trim();
-  if (pin.length === 4) {
-    currentPin = pin;
-    loadUserSongs();
-    document.getElementById('login-screen').style.display = 'none';
-    document.querySelector('.ipod-shell').style.display = 'flex';
-    showMenu();
-    getBatteryStatus();
-  } else {
-    alert("PIN debe tener 4 dígitos");
-  }
-}
+      // Load battery status
+      useEffect(() => {
+        if (loggedIn && 'getBattery' in navigator) {
+          navigator.getBattery().then(bat => {
+            setBattery(`${Math.round(bat.level*100)}%`);
+            bat.addEventListener('levelchange', () => {
+              setBattery(`${Math.round(bat.level*100)}%`);
+            });
+          });
+        }
+      }, [loggedIn]);
 
-function loadUserSongs() {
-  userSongs = JSON.parse(localStorage.getItem(currentPin)) || [];
-}
+      // Load songs from storage
+      useEffect(() => {
+        if (pin) {
+          const data = localStorage.getItem(pin);
+          setSongs(data ? JSON.parse(data) : []);
+        }
+      }, [pin]);
 
-function saveUserSongs() {
-  localStorage.setItem(currentPin, JSON.stringify(userSongs));
-}
+      function saveSongs(newSongs) {
+        localStorage.setItem(pin, JSON.stringify(newSongs));
+        setSongs(newSongs);
+      }
 
-function showMenu() {
-  currentScreen = 'menu';
-  selectedIndex = 0;
-  renderMenu();
-}
+      function handleLogin() {
+        if (pin.length === 4) {
+          setLoggedIn(true);
+          setScreen('menu');
+          setSelected(0);
+        } else {
+          alert('PIN debe tener 4 dígitos');
+        }
+      }
 
-function renderMenu() {
-  const items = ['▶ Biblioteca', '+ Añadir música'];
-  let html = 'Menú Principal:<br>';
-  items.forEach((item, i) => {
-    html += (i === selectedIndex ? '> ' : '  ') + item + '<br>';
-  });
-  screen.innerHTML = html;
-}
+      function renderScreen() {
+        if (screen === 'menu') {
+          const items = ['▶ Biblioteca','+ Añadir música'];
+          return items.map((item, i) =>
+            <div key={i} className={`screen-item ${i===selected?'selected':''}`}>{item}</div>);
+        }
+        if (screen === 'library') {
+          if (songs.length === 0) return <div>No hay canciones.</div>;
+          return songs.map((song,i) =>
+            <div key={i} className={`screen-item ${i===selected?'selected':''}`}>{song.title}</div>);
+        }
+        if (screen === 'add') {
+          return (
+            <>
+              Título:<br/>
+              <input ref={ytTitleRef}/><br/>
+              URL:<br/>
+              <input ref={ytUrlRef}/><br/>
+              <button onClick={addSong}>Guardar</button>
+            </>
+          );
+        }
+      }
 
-function renderLibrary() {
-  currentScreen = 'library';
-  selectedIndex = 0;
-  let html = 'Biblioteca:<br>';
-  if (userSongs.length === 0) {
-    html += '  (Vacío)<br>';
-  } else {
-    userSongs.forEach((song, i) => {
-      html += (i === selectedIndex ? '> ' : '  ') + song.title + '<br>';
-    });
-  }
-  screen.innerHTML = html;
-}
+      function addSong() {
+        const title = ytTitleRef.current.value.trim();
+        const url = ytUrlRef.current.value.trim();
+        if (title && url) {
+          const newList = [...songs, {title,url}];
+          saveSongs(newList);
+          alert('Añadido!');
+          setScreen('menu');
+          setSelected(0);
+        } else {
+          alert('Completa ambos campos');
+        }
+      }
 
-function renderAddMusic() {
-  currentScreen = 'add';
-  screen.innerHTML = `
-    Añadir música:<br>
-    <input id="yt-title" type="text" placeholder="Título"/><br>
-    <input id="yt-url" type="text" placeholder="YouTube URL"/><br>
-    <button onclick="addMusic()">Guardar</button><br>
-    <small>URL no se descarga, solo se guarda.</small>
-  `;
-}
+      function selectItem() {
+        if (screen === 'menu') {
+          if (selected === 0) setScreen('library');
+          else if (selected === 1) setScreen('add');
+          setSelected(0);
+        } else if (screen === 'library') {
+          const song = songs[selected];
+          if (song) window.open(song.url);
+        }
+      }
 
-function nextItem() {
-  if (currentScreen === 'menu' && selectedIndex < 1) selectedIndex++;
-  if (currentScreen === 'library' && selectedIndex < userSongs.length -1) selectedIndex++;
-  renderCurrent();
-}
+      function prevItem() {
+        setSelected(s => Math.max(0,s-1));
+      }
+      function nextItem() {
+        const max = screen==='menu'?1: songs.length-1;
+        setSelected(s => Math.min(max,s+1));
+      }
 
-function prevItem() {
-  if (selectedIndex > 0) selectedIndex--;
-  renderCurrent();
-}
+      // ClickWheel rotation
+      const wheelRef = useRef(null);
+      let lastAngle = null;
 
-function selectItem() {
-  if (currentScreen === 'menu') {
-    if (selectedIndex === 0) renderLibrary();
-    if (selectedIndex === 1) renderAddMusic();
-  } else if (currentScreen === 'library' && userSongs[selectedIndex]) {
-    window.open(userSongs[selectedIndex].url, '_blank');
-  }
-}
+      function startRotate(e) {
+        e.preventDefault();
+        lastAngle = null;
+        window.addEventListener('mousemove', rotate);
+        window.addEventListener('touchmove', rotateTouch);
+        window.addEventListener('mouseup', stopRotate);
+        window.addEventListener('touchend', stopRotate);
+      }
+      function stopRotate() {
+        window.removeEventListener('mousemove', rotate);
+        window.removeEventListener('touchmove', rotateTouch);
+      }
+      function rotateTouch(e) {
+        const t = e.touches[0];
+        rotate({clientX:t.clientX, clientY:t.clientY});
+      }
+      function rotate(e) {
+        const rect = wheelRef.current.getBoundingClientRect();
+        const cx = rect.left + rect.width/2;
+        const cy = rect.top + rect.height/2;
+        const dx = e.clientX - cx;
+        const dy = e.clientY - cy;
+        const angle = Math.atan2(dy,dx)*(180/Math.PI);
+        if (lastAngle !== null) {
+          let diff = angle - lastAngle;
+          if (diff>180) diff-=360;
+          if (diff<-180) diff+=360;
+          if (Math.abs(diff)>15) {
+            if (diff>0) nextItem();
+            else prevItem();
+          }
+        }
+        lastAngle = angle;
+      }
 
-function playSelected() {
-  if (currentScreen === 'library' && userSongs[selectedIndex]) {
-    window.open(userSongs[selectedIndex].url, '_blank');
-  }
-}
+      if (!loggedIn) {
+        return (
+          <div id="login-screen">
+            <label>PIN:</label>
+            <input type="password" maxLength="4" value={pin} onChange={e=>setPin(e.target.value)}/>
+            <button onClick={handleLogin}>Entrar</button>
+          </div>
+        )
+      }
 
-function addMusic() {
-  const title = document.getElementById('yt-title').value.trim();
-  const url = document.getElementById('yt-url').value.trim();
-  if (title && url) {
-    userSongs.push({title, url});
-    saveUserSongs();
-    alert('¡Guardado!');
-    showMenu();
-  } else {
-    alert('Completa título y URL');
-  }
-}
-
-function renderCurrent() {
-  if (currentScreen === 'menu') renderMenu();
-  else if (currentScreen === 'library') renderLibrary();
-}
-
-function getBatteryStatus() {
-  if ('getBattery' in navigator) {
-    navigator.getBattery().then(battery => {
-      updateBattery(battery.level);
-      battery.addEventListener('levelchange', () => {
-        updateBattery(battery.level);
-      });
-    });
-  } else {
-    document.getElementById('battery').innerText = 'Bat: N/A';
-  }
-}
-
-function updateBattery(level) {
-  document.getElementById('battery').innerText = `Bat: ${Math.round(level * 100)}%`;
-}
-
-// ClickWheel real con rotación
-let lastAngle = null;
-const clickwheel = document.querySelector('.clickwheel');
-
-clickwheel.addEventListener('mousedown', startRotate);
-clickwheel.addEventListener('touchstart', startRotate);
-
-function startRotate(e) {
-  e.preventDefault();
-  lastAngle = null;
-
-  window.addEventListener('mousemove', rotate);
-  window.addEventListener('touchmove', rotateTouch);
-  window.addEventListener('mouseup', stopRotate);
-  window.addEventListener('touchend', stopRotate);
-}
-
-function stopRotate() {
-  window.removeEventListener('mousemove', rotate);
-  window.removeEventListener('touchmove', rotateTouch);
-  window.removeEventListener('mouseup', stopRotate);
-  window.removeEventListener('touchend', stopRotate);
-}
-
-function rotateTouch(e) {
-  const touch = e.touches[0];
-  rotate({ clientX: touch.clientX, clientY: touch.clientY });
-}
-
-function rotate(e) {
-  const rect = clickwheel.getBoundingClientRect();
-  const centerX = rect.left + rect.width / 2;
-  const centerY = rect.top + rect.height / 2;
-
-  const dx = e.clientX - centerX;
-  const dy = e.clientY - centerY;
-
-  const angle = Math.atan2(dy, dx) * (180 / Math.PI);
-
-  if (lastAngle !== null) {
-    let diff = angle - lastAngle;
-
-    if (diff > 180) diff -= 360;
-    if (diff < -180) diff += 360;
-
-    if (Math.abs(diff) > 10) {
-      if (diff > 0) nextItem();
-      else prevItem();
+      return (
+        <div className="ipod-shell">
+          <div id="battery">Bat: {battery}</div>
+          <div className="ipod-screen">{renderScreen()}</div>
+          <div className="clickwheel" ref={wheelRef}
+            onMouseDown={startRotate} onTouchStart={startRotate}>
+            <div className="btn menu" onClick={()=>{setScreen('menu'); setSelected(0)}}>MENU</div>
+            <div className="center-button" onClick={selectItem}></div>
+          </div>
+        </div>
+      );
     }
-  }
 
-  lastAngle = angle;
-}
-</script>
-
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
 </body>
 </html>
